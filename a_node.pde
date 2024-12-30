@@ -2,11 +2,11 @@ class Node{
     String country;
     float x,y;
     float radius;
-    color defaultColour;  //default color and stroke
+    color defaultColour; 
     color defaultStroke;
-    color selectedColour; //selected color and stroke
+    color selectedColour;
     color selectedStroke;
-    color currentColour;  //current color and stroke
+    color currentColour; 
     color currentStroke;
     boolean isSelected;
     HashMap<String, Integer> borderingCountries;
@@ -16,9 +16,9 @@ class Node{
         this.x = x;
         this.y = y;
         this.radius = r;
-        this.defaultColour = color(44, 94, 232,100);     //default node color | blue
+        this.defaultColour = color(44, 94, 232,100);   //default node color | blue
         this.defaultStroke = color(2, 30, 107);        //default node color stroke| darker blue
-        this.selectedColour = color(191, 8, 75,100);     //when node is clicked | red & pink 
+        this.selectedColour = color(191, 8, 75,100);   //when node is clicked | red & pink 
         this.selectedStroke = color(97, 5, 39);        //when node is clicked stroke | darker red & pink
         this.currentColour = this.defaultColour;       //initial state
         this.currentStroke = this.defaultStroke;
@@ -27,21 +27,34 @@ class Node{
     }
 
     // on mouse event
-    void updateState(){
-        if(isMouseInside()){
-            if (!this.isSelected){
-                println("clicked " + this.country);
-                this.currentColour = this.selectedColour;
-                this.currentStroke = this.selectedStroke;
-                this.isSelected = true;
-            }
-        }else{
-          if (this.isSelected){
-                println("released " + this.country);
-                this.currentColour = this.defaultColour;
-                this.currentStroke = this.defaultStroke;
-                this.isSelected = false;
-            }
+    void unselectState(){
+        // unselect node case 1 | another node is selected
+        if (this.isSelected && !isMouseInside()){
+            println("released " + this.country);
+            this.currentColour = this.defaultColour;
+            this.currentStroke = this.defaultStroke;
+            this.isSelected = false;
+            createEdges(false);
+        }
+
+        // unselect node case 2 | the node is already selected and it gets clicked again
+        else if(this.isSelected && isMouseInside()){
+            println("released " + this.country);
+            this.currentColour = this.defaultColour;
+            this.currentStroke = this.defaultStroke;
+            this.isSelected = false;
+            createEdges(false);
+        }
+    }
+
+    void selectState(){
+        // select node
+        if (!this.isSelected && isMouseInside()){
+            println("clicked " + this.country);
+            this.currentColour = this.selectedColour;
+            this.currentStroke = this.selectedStroke;
+            this.isSelected = true;
+            createEdges(true);
         }
     }
 
@@ -61,6 +74,16 @@ class Node{
         for (Map.Entry country : this.borderingCountries.entrySet()) {
             print(country.getKey() + " is ");
             println(country.getValue() + " units away");
+        }
+    }
+
+    // create edges with all its neighbors
+    void createEdges(boolean selected){
+        for (Map.Entry<String, Integer> country : this.borderingCountries.entrySet()) {
+            Node n = returnNode(country.getKey());
+            if(n!=null){
+                edges.add(new Edge(this, n, country.getValue(), selected));
+            }
         }
     }
 

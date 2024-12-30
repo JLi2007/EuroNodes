@@ -1,5 +1,8 @@
 void mousePressed(){
     for(Node node: nodes){
-        node.updateState();
+        node.unselectState();
+    }
+    for(Node node: nodes){
+        node.selectState();
     }
 }
