@@ -6,6 +6,8 @@ PImage map;
 PFont font;
 int borderingDistance = 300; //placeholder for now
 boolean showEdges = false;
+String startingNode;    //from the dropdown
+int[] dijkstraArray;
 
 //Arrays
 ArrayList<Node> nodes = new ArrayList<Node>();
@@ -15,6 +17,7 @@ void setup(){
     size(1100,750);
     surface.setLocation(0, 0);
     createGUI();
+    smooth();
     map = loadImage("europe.jpg");
 
     // font
@@ -71,11 +74,40 @@ void draw(){
     }
 }
 
-Node returnNode(String name){
+Node returnNodeWithName(String name){
     for(Node node: nodes){
         if(node.country.equals(name)){
             return node;
         }
     }
     return null;
+}
+
+Node returnNodeWithPos(int pos){
+    return nodes.get(pos);
+}
+
+// perhaps problems with this we'll see...
+int returnNodePosition(Node n1){
+    for(int n = 0; n<nodes.size(); n++){
+        if(nodes.get(n) == n1){
+            return n;
+        }
+    }
+    return 0;
+}
+
+Edge returnEdge(Node n1, Node n2){
+    for(Edge edge: edges){
+        if(edge.n1 == n1 && edge.n2 == n2){
+            println("DING DING DING");
+            return edge;
+        }
+    }
+    return null;
+}
+
+String returnCountry(String input){
+    String[] cityAndCountry = split(input, ", ");
+    return cityAndCountry[1];
 }

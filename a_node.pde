@@ -36,15 +36,6 @@ class Node{
             this.isSelected = false;
             createEdges(false);
         }
-
-        // unselect node case 2 | the node is already selected and it gets clicked again
-        else if(this.isSelected && isMouseInside()){
-            println("released " + this.country);
-            this.currentColour = this.defaultColour;
-            this.currentStroke = this.defaultStroke;
-            this.isSelected = false;
-            createEdges(false);
-        }
     }
 
     void selectState(){
@@ -56,12 +47,21 @@ class Node{
             this.isSelected = true;
             createEdges(true);
         }
+
+        // unselect node case 2 | the node is already selected and it gets clicked again
+        else if(this.isSelected && isMouseInside()){
+            println("released " + this.country);
+            this.currentColour = this.defaultColour;
+            this.currentStroke = this.defaultStroke;
+            this.isSelected = false;
+            createEdges(false);
+        }
     }
 
     void addDefaultNeighbors(){
         for(int n = 0; n<=nodes.size()-1; n++){
             int d = calculateDistance(this, nodes.get(n));
-            if(d!=0 && d<borderingDistance){
+            if(d<borderingDistance){ //d!=0 && 
                 this.borderingCountries.put(nodes.get(n).country, d);
             }
         }
@@ -80,7 +80,7 @@ class Node{
     // create edges with all its neighbors
     void createEdges(boolean selected){
         for (Map.Entry<String, Integer> country : this.borderingCountries.entrySet()) {
-            Node n = returnNode(country.getKey());
+            Node n = returnNodeWithName(country.getKey());
             if(n!=null){
                 edges.add(new Edge(this, n, country.getValue(), selected));
             }

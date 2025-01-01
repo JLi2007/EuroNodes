@@ -1,7 +1,7 @@
 class Edge{
     Node n1, n2;    //the two nodes that make up this edge
     int dist;       //distance between the nodes
-    int weight = 2;
+    int weight = 4;
     color defaultStroke;
     color selectedStroke;
     color currentStroke;
