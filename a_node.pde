@@ -81,7 +81,15 @@ class Node{
     void createEdges(boolean selected){
         for (Map.Entry<String, Integer> country : this.borderingCountries.entrySet()) {
             Node n = returnNodeWithName(country.getKey());
+
             if(n!=null){
+                // first, remove the previous edge
+                if(!firstEdges){
+                    int removeEdge = returnEdgeIndex(this, n);
+                    edges.remove(removeEdge);
+                }
+
+                // then, add the new edge
                 edges.add(new Edge(this, n, country.getValue(), selected));
             }
         }

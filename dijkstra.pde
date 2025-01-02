@@ -20,7 +20,7 @@ int[] runDijkstra(Node n1){
         visited[min] = true;
 
         for(int c = 0; c < nodesSize; c++){
-            Edge edge = returnEdge(returnNodeWithPos(min), returnNodeWithPos(c));
+            Edge edge = returnEdge(nodes.get(min), nodes.get(c));
             if(edge != null){
                 int edgeDist = edge.dist;
                 if(!visited[c] && edgeDist != 0 && distances[min] != Integer.MAX_VALUE){

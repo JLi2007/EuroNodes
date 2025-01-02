@@ -5,7 +5,7 @@ import java.awt.Font;
 PImage map;
 PFont font;
 int borderingDistance = 300; //placeholder for now
-boolean showEdges = false;
+boolean showEdges = false, showEdgeDist = false, firstEdges = true;
 String startingNode;    //from the dropdown
 int[] dijkstraArray;
 
@@ -15,10 +15,13 @@ ArrayList<Edge> edges = new ArrayList<Edge>();
 
 void setup(){
     size(1100,750);
+    // start the surface on the top left corner of computer screen
     surface.setLocation(0, 0);
+    map = loadImage("europe.jpg");
     createGUI();
     smooth();
-    map = loadImage("europe.jpg");
+    strokeJoin(ROUND);
+    strokeCap(ROUND);
 
     // font
     font = createFont("SansSerif", 15);
@@ -40,6 +43,7 @@ void setup(){
         node.printNeighbors();
         node.createEdges(false);
     }
+    firstEdges=false;
 }
 
 void draw(){
@@ -66,7 +70,7 @@ void draw(){
     for(Node node: nodes){
         node.drawNode();
     }
-
+    
     if(showEdges){
         for(Edge edge: edges){
             edge.showEdge();
@@ -74,6 +78,7 @@ void draw(){
     }
 }
 
+// return the Node with name of country
 Node returnNodeWithName(String name){
     for(Node node: nodes){
         if(node.country.equals(name)){
@@ -83,11 +88,7 @@ Node returnNodeWithName(String name){
     return null;
 }
 
-Node returnNodeWithPos(int pos){
-    return nodes.get(pos);
-}
-
-// perhaps problems with this we'll see...
+// return the position of Node in the nodes arraylist
 int returnNodePosition(Node n1){
     for(int n = 0; n<nodes.size(); n++){
         if(nodes.get(n) == n1){
@@ -97,16 +98,27 @@ int returnNodePosition(Node n1){
     return 0;
 }
 
+// return the Edge between two Nodes
 Edge returnEdge(Node n1, Node n2){
     for(Edge edge: edges){
         if(edge.n1 == n1 && edge.n2 == n2){
-            println("DING DING DING");
             return edge;
         }
     }
     return null;
 }
 
+// return the index of the Edge between two Nodes
+int returnEdgeIndex(Node n1, Node n2){
+    for(int i = 0; i<edges.size(); i++){
+        if(edges.get(i).n1 == n1 && edges.get(i).n2 == n2){
+            return i;
+        }
+    }
+    return 0;
+}
+
+// split the country and city and return the country part
 String returnCountry(String input){
     String[] cityAndCountry = split(input, ", ");
     return cityAndCountry[1];
