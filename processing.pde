@@ -1,12 +1,15 @@
 import g4p_controls.*;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.awt.Font;
 
 PImage map;
 PFont font;
 int borderingDistance = 300; //placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true;
-String startingNode;    //from the dropdown
+String startingNode, endingNode, passingNode;    //from the dropdown
 int[] dijkstraArray;
 
 //Arrays

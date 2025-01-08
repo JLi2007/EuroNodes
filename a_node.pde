@@ -71,7 +71,14 @@ class Node{
     void printNeighbors(){
         println("-------------------------------------");
         println(this.country + "'s neighbors: ");
-        for (Map.Entry country : this.borderingCountries.entrySet()) {
+
+        // sort by increasing distances when printing to terminal 
+        // when they are initially printed, they are in random order (default hashmap behavior)
+        List<Map.Entry<String, Integer>> sortedBorderingCountries = new ArrayList<>(this.borderingCountries.entrySet());
+        sortedBorderingCountries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)); 
+
+        // print the sorted neighbors
+        for (Map.Entry country : sortedBorderingCountries) {
             print(country.getKey() + " is ");
             println(country.getValue() + " units away");
         }
