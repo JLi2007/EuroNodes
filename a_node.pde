@@ -35,6 +35,7 @@ class Node{
             this.currentStroke = this.defaultStroke;
             this.isSelected = false;
             createEdges(false);
+            showCountryInfo = false;
         }
     }
 
@@ -46,6 +47,7 @@ class Node{
             this.currentStroke = this.selectedStroke;
             this.isSelected = true;
             createEdges(true);
+            showCountryInfo = true;
         }
 
         // unselect node case 2 | the node is already selected and it gets clicked again
@@ -55,6 +57,7 @@ class Node{
             this.currentStroke = this.defaultStroke;
             this.isSelected = false;
             createEdges(false);
+            showCountryInfo = false;
         }
     }
 

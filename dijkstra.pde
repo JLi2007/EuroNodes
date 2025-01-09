@@ -49,3 +49,13 @@ int minDistance(int[] distances, boolean[] visited){
     }
     return minIndex;
 }
+
+int normalizeDistance(int d){
+    // actual distance from Paris to Madrid (Km)
+    float n = 1274.8;
+    // distance in the program (units)
+    float p = 194.0;
+
+    // return the new distance in km
+    return int(d*(n/p));
+}

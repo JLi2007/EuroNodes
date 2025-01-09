@@ -7,9 +7,11 @@ import java.awt.Font;
 
 PImage map;
 PFont font;
-int borderingDistance = 300; //placeholder for now
+int borderingDistance = 200; //placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true;
-String startingNode, endingNode, passingNode;    //from the dropdown
+boolean showDijkstra = false, showCountryInfo = false;
+String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry;    //from the dropdown
+int endingIndex;
 int[] dijkstraArray;
 
 //Arrays
@@ -40,6 +42,7 @@ void setup(){
     nodes.add(new Node("Germany", 626, 419, 18));
     nodes.add(new Node("Finland", 813, 243, 18));
     nodes.add(new Node("Norway", 583, 247, 18));
+    nodes.add(new Node("Poland", 748, 424, 17));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -72,11 +75,19 @@ void draw(){
     // draw node and edges
     for(Node node: nodes){
         node.drawNode();
+
+        // update this variable for gui purposes
+        if(node.isSelected){
+            selectedCountry = node.country;
+        }
     }
     
     if(showEdges){
         for(Edge edge: edges){
             edge.showEdge();
+        }
+        for(Edge edge: edges){
+            edge.showEdgeDist();
         }
     }
 }
@@ -125,4 +136,10 @@ int returnEdgeIndex(Node n1, Node n2){
 String returnCountry(String input){
     String[] cityAndCountry = split(input, ", ");
     return cityAndCountry[1];
+}
+
+// split the country and city and return the city part
+String returnCity(String input){
+    String[] cityAndCountry = split(input, ", ");
+    return cityAndCountry[0];
 }

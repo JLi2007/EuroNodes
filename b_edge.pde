@@ -13,11 +13,11 @@ class Edge{
         this.dist = dist; 
         this.defaultStroke = color(2, 30, 107);  
         this.selectedStroke = color(191, 8, 75);
-        this.weight = 4;
+        this.weight = 3;
         if(selected){
             this.currentStroke = this.selectedStroke;
             this.inverseCurrentStroke = this.defaultStroke;
-            this.weight = 5;
+            this.weight = 4;
         }else{
             this.currentStroke = this.defaultStroke;
             this.inverseCurrentStroke = this.selectedStroke;
@@ -28,20 +28,19 @@ class Edge{
         strokeWeight(this.weight);
         stroke(this.currentStroke);
         line(n1.x, n1.y, n2.x, n2.y);
-        if(showEdgeDist){
-            showEdgeDist();
-        }
     }
 
     void showEdgeDist(){
-        float x = (this.n1.x + this.n2.x ) / 2;
-        float y = (this.n1.y + this.n2.y ) / 2;
-        if(this.dist != 0){
-            fill(this.inverseCurrentStroke);
-            strokeWeight(1);
-            rect(x-15,y-9,30,20);
-            fill(this.currentStroke);
-            text(this.dist, x, y);
+        if(showEdgeDist){
+            float x = (this.n1.x + this.n2.x ) / 2;
+            float y = (this.n1.y + this.n2.y ) / 2;
+            if(this.dist != 0){
+                fill(this.inverseCurrentStroke);
+                strokeWeight(1);
+                rect(x-15,y-9,30,20);
+                fill(this.currentStroke);
+                text(this.dist, x, y);
+            }
         }
     }
 }
