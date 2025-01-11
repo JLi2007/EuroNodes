@@ -72,7 +72,6 @@ class Node{
 
     // prints the hashmap to visualize the neighbors in terminal
     void printNeighbors(){
-        println("-------------------------------------");
         println(this.country + "'s neighbors: ");
 
         // sort by increasing distances when printing to terminal 
@@ -85,6 +84,7 @@ class Node{
             print(country.getKey() + " is ");
             println(country.getValue() + " units away");
         }
+        println("-------------------------------------");
     }
 
     // create edges with all its neighbors

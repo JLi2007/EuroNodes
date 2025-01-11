@@ -7,10 +7,11 @@ import java.awt.Font;
 
 PImage map;
 PFont font;
-int borderingDistance = 200; //placeholder for now
+int borderingDistance = 200; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true;
-boolean showDijkstra = false, showCountryInfo = false;
-String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry;    //from the dropdown
+boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
+String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
+String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
 int endingIndex;
 int[] dijkstraArray;
 
@@ -35,14 +36,17 @@ void setup(){
 
     // create all the countries (nodes)
     nodes.add(new Node("Russia", 1017, 346, 40));
-    nodes.add(new Node("Ukraine", 902, 463, 22));
-    nodes.add(new Node("France", 448, 496, 20));
-    nodes.add(new Node("Spain", 350, 664, 19));
-    nodes.add(new Node("Sweden", 701, 264, 19));
-    nodes.add(new Node("Germany", 626, 419, 18));
-    nodes.add(new Node("Finland", 813, 243, 18));
-    nodes.add(new Node("Norway", 583, 247, 18));
-    nodes.add(new Node("Poland", 748, 424, 17));
+    nodes.add(new Node("Ukraine", 902, 463, 23));
+    nodes.add(new Node("France", 448, 496, 21));
+    nodes.add(new Node("Spain", 350, 664, 20));
+    nodes.add(new Node("Sweden", 701, 264, 20));
+    nodes.add(new Node("Germany", 626, 419, 19));
+    nodes.add(new Node("Finland", 813, 243, 19));
+    nodes.add(new Node("Norway", 583, 247, 19));
+    nodes.add(new Node("Poland", 748, 424, 18));
+    nodes.add(new Node("Italy", 610, 635, 18));
+    nodes.add(new Node("United Kingdom", 408, 441, 17));
+    nodes.add(new Node("Romania", 830, 585, 17));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -72,6 +76,10 @@ void draw(){
         text(str(100*y),20,100*y);
     }
 
+    // rectangle on bottom left corner
+    fill(2, 30, 107, 120);
+    rect(0, 600, 200, 200);
+
     // draw node and edges
     for(Node node: nodes){
         node.drawNode();
@@ -94,8 +102,12 @@ void draw(){
 
 // return the Node with name of country
 Node returnNodeWithName(String name){
+    if(name==null){
+        return null;
+    }
+
     for(Node node: nodes){
-        if(node.country.equals(name)){
+        if(node.country.toUpperCase().trim().equals(name.toUpperCase().trim())){
             return node;
         }
     }
