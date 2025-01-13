@@ -1,8 +1,8 @@
-int[] runDijkstra(Node n1){ 
-    dijkstraArray = new int[nodes.size()];
+Inventory runDijkstra(Node n1){ 
     int startingNode = returnNodePosition(n1);
     int nodesSize = nodes.size();
     int[] distances = new int[nodesSize];
+    int[] predecessors = new int[nodesSize];
     boolean[] visited = new boolean[nodesSize];
 
     for (int i = 0; i < nodesSize; i++) {
@@ -27,12 +27,14 @@ int[] runDijkstra(Node n1){
                     int newDist = distances[min] + edgeDist;
                     if(newDist < distances[c]){
                         distances[c] = newDist;
+                        predecessors[c] = min;
                     }
                 }
             }
         }
     }
-    return distances;
+
+    return new Inventory(distances, predecessors);
 }
 
 int minDistance(int[] distances, boolean[] visited){

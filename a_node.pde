@@ -16,9 +16,9 @@ class Node{
         this.x = x;
         this.y = y;
         this.radius = r;
-        this.defaultColour = color(44, 94, 232,100);   //default node color | blue
+        this.defaultColour = color(44, 94, 232, 100);   //default node color | blue
         this.defaultStroke = color(2, 30, 107);        //default node color stroke| darker blue
-        this.selectedColour = color(191, 8, 75,100);   //when node is clicked | red & pink 
+        this.selectedColour = color(191, 8, 75, 100);   //when node is clicked | red & pink 
         this.selectedStroke = color(97, 5, 39);        //when node is clicked stroke | darker red & pink
         this.currentColour = this.defaultColour;       //initial state
         this.currentStroke = this.defaultStroke;

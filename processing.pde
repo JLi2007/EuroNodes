@@ -13,7 +13,8 @@ boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  //
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
 String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
 int endingIndex;
-int[] dijkstraArray;
+Inventory dijkstraArray;
+int[] distances, paths;
 
 //Arrays
 ArrayList<Node> nodes = new ArrayList<Node>();
@@ -76,9 +77,20 @@ void draw(){
         text(str(100*y),20,100*y);
     }
 
-    // rectangle on bottom left corner
+    // semi-transparent rectangles on the left side
     fill(2, 30, 107, 120);
     rect(0, 600, 200, 200);
+    fill(97, 5, 39, 120);
+    rect(0, 200, 200, 400);
+
+    // placeholder?
+    fill(0);
+    if(showCountryInfo && selectedCountry != null){
+      text(selectedCountry, 10, 250);
+    }
+    else{
+      text("Select a country on the UI to display information", 10, 250);
+    }
 
     // draw node and edges
     for(Node node: nodes){
