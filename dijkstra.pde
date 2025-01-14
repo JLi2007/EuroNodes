@@ -1,5 +1,6 @@
-Inventory runDijkstra(Node n1){ 
+String runDijkstra(Node n1, Node n2){ 
     int startingNode = returnNodePosition(n1);
+    int endingNode = returnNodePosition(n2);
     int nodesSize = nodes.size();
     int[] distances = new int[nodesSize];
     int[] predecessors = new int[nodesSize];
@@ -7,7 +8,9 @@ Inventory runDijkstra(Node n1){
 
     for (int i = 0; i < nodesSize; i++) {
         distances[i] = Integer.MAX_VALUE;
+        predecessors[i] = Integer.MIN_VALUE;
     }
+
     distances[startingNode] = 0;
 
     for (int i = 0; i < nodesSize; i++){
@@ -34,7 +37,13 @@ Inventory runDijkstra(Node n1){
         }
     }
 
-    return new Inventory(distances, predecessors);
+    // build the return string
+    StringBuilder path = new StringBuilder();
+    for (int e = endingNode; e != Integer.MIN_VALUE; e = predecessors[e]) {
+        path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
+    }
+
+    return path.toString() + "," + distances[endingNode];
 }
 
 int minDistance(int[] distances, boolean[] visited){

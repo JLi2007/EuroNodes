@@ -3,18 +3,18 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.lang.StringBuilder;
 import java.awt.Font;
 
 PImage map;
 PFont font;
-int borderingDistance = 200; // placeholder for now
+int borderingDistance = 175; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
 String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
-int endingIndex;
-Inventory dijkstraArray;
-int[] distances, paths;
+int dijkstraDistance;
+String dijkstraOutput, dijkstraRoute;
 
 //Arrays
 ArrayList<Node> nodes = new ArrayList<Node>();
@@ -36,18 +36,20 @@ void setup(){
     textAlign(CENTER, CENTER);
 
     // create all the countries (nodes)
-    nodes.add(new Node("Russia", 1017, 346, 40));
-    nodes.add(new Node("Ukraine", 902, 463, 23));
-    nodes.add(new Node("France", 448, 496, 21));
-    nodes.add(new Node("Spain", 350, 664, 20));
-    nodes.add(new Node("Sweden", 701, 264, 20));
-    nodes.add(new Node("Germany", 626, 419, 19));
-    nodes.add(new Node("Finland", 813, 243, 19));
-    nodes.add(new Node("Norway", 583, 247, 19));
-    nodes.add(new Node("Poland", 748, 424, 18));
-    nodes.add(new Node("Italy", 610, 635, 18));
-    nodes.add(new Node("United Kingdom", 408, 441, 17));
-    nodes.add(new Node("Romania", 830, 585, 17));
+    nodes.add(new Node("Russia", 1017, 346, 45));
+    nodes.add(new Node("Ukraine", 902, 463, 25));
+    nodes.add(new Node("France", 448, 496, 22));
+    nodes.add(new Node("Spain", 350, 664, 21));
+    nodes.add(new Node("Sweden", 701, 264, 21));
+    nodes.add(new Node("Germany", 626, 419, 20));
+    nodes.add(new Node("Finland", 813, 243, 20));
+    nodes.add(new Node("Norway", 583, 247, 20));
+    nodes.add(new Node("Poland", 748, 424, 19));
+    nodes.add(new Node("Italy", 610, 635, 19));
+    nodes.add(new Node("United Kingdom", 408, 441, 18));
+    nodes.add(new Node("Romania", 830, 585, 18));
+    nodes.add(new Node("Belarus", 854, 388, 17));
+    nodes.add(new Node("Greece", 794, 709, 16));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();

@@ -33,14 +33,14 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     }
 
     if(showDijkstra){
-      statusDescription.setText(endingCity + " is " + distances[endingIndex] + " units (" + normalizeDistance(distances[endingIndex]) + "km) away from " + startingCity);
+      statusDescription.setText(endingCity + " is " + dijkstraDistance + " units (" + normalizeDistance(dijkstraDistance) + "km) away from " + startingCity + " \n" + dijkstraRoute);
     }
     else if(addEdgeStatus.equals("F")){
       statusDescription.setText("CANNOT add edge, country name(s) spelled wrong or the country(s) do not exist on the map");
     }
     else if(addEdgeStatus.equals("S")){
       statusDescription.setText("Added edge from " + addedEdge1.toUpperCase() + " to " + addedEdge2.toUpperCase());
-    }
+    }  
 } 
 
 public void edgesChecked(GCheckbox source, GEvent event) { 
@@ -112,20 +112,19 @@ public void addEdge(GButton source, GEvent event) {
 } 
 
 public void initDijkstra(GButton source, GEvent event) { 
-  if(startingCountry != null){
-    dijkstraArray = runDijkstra(returnNodeWithName(startingCountry));
-    distances = dijkstraArray.distances;
-    paths = dijkstraArray.paths;
+  if(startingCountry != null && endingCountry != null){
 
-    printArray(distances);
-    printArray(paths);
+    // in the format "country1->country2->country3,distance"
+    dijkstraOutput= runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry));
+    dijkstraRoute = dijkstraOutput.split(",")[0];
+    dijkstraDistance = int(dijkstraOutput.split(",")[1]);
+
+    println(dijkstraRoute, dijkstraDistance);
 
     // placeholder
     println("ran dijkstra and populated array var");
 
-    endingIndex = returnNodePosition(returnNodeWithName(endingCountry));
-
-    println(endingCountry + " is " + distances[endingIndex] + " units away from " + startingCountry);
+    println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
     successStatus = true;
     showDijkstra = true;
     addEdgeStatus = "N";
@@ -218,16 +217,10 @@ public void createGUI(){
   adding_edge_label.setOpaque(false);
   adding_edge_label.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-  pathPanel = new GPanel(toolbarWindow, 400, 50, 400, 200, "Path Panel");
-  pathPanel.setCollapsed(true);
-  pathPanel.setText("...");
-  pathPanel.setOpaque(true);
-  pathPanel.addEventHandler(this, "panel1_Click1");
-
-  statusDescription = new GTextArea(toolbarWindow, 10, 440, 380, 50, G4P.SCROLLBARS_NONE);
+  statusDescription = new GTextArea(toolbarWindow, 10, 430, 380, 60, G4P.SCROLLBARS_NONE);
   statusDescription.setText("Welcome to Euronodes");
   statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 14) );
-
+  
   // initialize variables   
   startingCountry = returnCountry(startingSelect.getSelectedText());
   startingCity = returnCity(startingSelect.getSelectedText());
@@ -243,5 +236,4 @@ GDropList startingSelect, endingSelect, passingSelect;
 GLabel starting_label, ending_label, passing_label, adding_edge_label, info_label; 
 GButton dijkstra_btn, add_edge_btn; 
 GTextField addEdge1, addEdge2;
-GPanel pathPanel; 
 GTextArea statusDescription;
