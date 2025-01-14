@@ -200,6 +200,15 @@ class Edge{
         }
     }
 }
+class Inventory{
+    int[] distances; 
+    int[] paths; 
+
+    Inventory(int[] d, int[] p){
+        this.distances = d;
+        this.paths = p;
+    }
+}
 public Inventory runDijkstra(Node n1){ 
     int startingNode = returnNodePosition(n1);
     int nodesSize = nodes.size();
@@ -297,10 +306,6 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       appc.text("x STATUS x", 165, 420);
     }
 
-    statusDescription = new GTextArea(toolbarWindow, 10, 440, 380, 50, G4P.SCROLLBARS_NONE);
-    statusDescription.setText("Welcome to Euronodes");
-    statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 14) );
-
     if(showDijkstra){
       statusDescription.setText(endingCity + " is " + distances[endingIndex] + " units (" + normalizeDistance(distances[endingIndex]) + "km) away from " + startingCity);
     }
@@ -364,8 +369,9 @@ public void addEdge(GButton source, GEvent event) {
   if(returnNodeWithName(addedEdge1) != null && returnNodeWithName(addedEdge2) != null ){
     Node n1 = returnNodeWithName(addedEdge1);
     Node n2 = returnNodeWithName(addedEdge2);
-    n1.borderingCountries.put(n2.country, n1.calculateDistance(n1,n2));
-    n2.borderingCountries.put(n1.country, n2.calculateDistance(n2,n1));
+    int d = n1.calculateDistance(n1,n2);
+    n1.borderingCountries.put(n2.country, d);
+    n2.borderingCountries.put(n1.country, d);
     n1.createEdges(false);
     n2.createEdges(false);
     // display success message in STATUS
@@ -491,6 +497,10 @@ public void createGUI(){
   pathPanel.setText("...");
   pathPanel.setOpaque(true);
   pathPanel.addEventHandler(this, "panel1_Click1");
+
+  statusDescription = new GTextArea(toolbarWindow, 10, 440, 380, 50, G4P.SCROLLBARS_NONE);
+  statusDescription.setText("Welcome to Euronodes");
+  statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 14) );
 
   // initialize variables   
   startingCountry = returnCountry(startingSelect.getSelectedText());
@@ -677,15 +687,6 @@ public String returnCountry(String input){
 public String returnCity(String input){
     String[] cityAndCountry = split(input, ", ");
     return cityAndCountry[0];
-}
-class Inventory{
-    int[] distances; 
-    int[] paths; 
-
-    Inventory(int[] d, int[] p){
-        this.distances = d;
-        this.paths = p;
-    }
 }
 
 
