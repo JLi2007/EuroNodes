@@ -1,4 +1,4 @@
-String runDijkstra(Node n1, Node n2){ 
+String runDijkstra(Node n1, Node n2, boolean passing){ 
     int startingNode = returnNodePosition(n1);
     int endingNode = returnNodePosition(n2);
     int nodesSize = nodes.size();
@@ -46,9 +46,23 @@ String runDijkstra(Node n1, Node n2){
 
     for (int e = endingNode; e != Integer.MIN_VALUE; e = predecessors[e]) {
         if(nodes.get(e).country != previousNode){
-            path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
-            previousNode = nodes.get(e).country;
+            // implement passing boolean for correct string return (or else it will return: "country1-->country2-->country2...")
+            if(passing){
+                if(nodes.get(e).country != n1.country){
+                    path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
+                    previousNode = nodes.get(e).country;
+                }
+            }
+            else{
+                path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
+                previousNode = nodes.get(e).country;
+            }
         }
+    }
+
+    // if beginning and ending country are the same, return "country1 --> country1" rather than "country1"
+    if(n1 == n2){
+        path.insert(0, n1.country + "->");
     }
 
     return path.toString() + "," + distances[endingNode];

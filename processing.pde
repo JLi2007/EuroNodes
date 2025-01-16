@@ -50,6 +50,7 @@ void setup(){
     nodes.add(new Node("Romania", 830, 585, 18));
     nodes.add(new Node("Belarus", 854, 388, 17));
     nodes.add(new Node("Greece", 794, 709, 16));
+    nodes.add(new Node("Bulgaria", 786, 620, 15));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -155,7 +156,6 @@ int returnEdgeIndex(Node n1, Node n2){
             return i;
         }
     }
-    println(n1.country, n2.country + " not removed");
     return 0;
 }
 

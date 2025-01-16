@@ -36,11 +36,27 @@ class Edge{
             float y = (this.n1.y + this.n2.y ) / 2;
             if(this.dist != 0){
                 fill(this.inverseCurrentStroke);
+                stroke(this.currentStroke);
                 strokeWeight(1);
-                rect(x-15,y-9,30,20);
+
+                // if statements to handle the size of the edge Weight on UI
+                if(this.dist>150){
+                    textSize(15);
+                    rect(x-15,y-9,30,20);
+                }
+                else if(this.dist<100){
+                    textSize(10);
+                    rect(x-10,y-6,20,13);
+                }
+                else{
+                    textSize(12);
+                    rect(x-12,y-7,24,16);
+                }
                 fill(this.currentStroke);
                 text(this.dist, x, y);
             }
         }
+        // reset the text size
+        textSize(15);
     }
 }

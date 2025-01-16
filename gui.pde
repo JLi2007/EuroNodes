@@ -97,6 +97,8 @@ public void addEdge(GButton source, GEvent event) {
     Node n2 = returnNodeWithName(addedEdge2);
     n1.borderingCountries.put(n2.country, n1.calculateDistance(n1,n2));
     n2.borderingCountries.put(n1.country, n2.calculateDistance(n2,n1));
+
+    // recreate the edges to update the map UI
     n1.createEdges(false);
     n2.createEdges(false);
     
@@ -117,12 +119,12 @@ public void initDijkstra(GButton source, GEvent event) {
     if(passingCountry != null){
 
       // from starting country to the passing country
-      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry));
+      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry), false);
       String dijkstraRoute1 = dijkstraOutput.split(",")[0];
       int dijkstraDistance1 = int(dijkstraOutput.split(",")[1]);
 
       // from passing country to the ending country
-      dijkstraOutput = runDijkstra(returnNodeWithName(passingCountry), returnNodeWithName(endingCountry));
+      dijkstraOutput = runDijkstra(returnNodeWithName(passingCountry), returnNodeWithName(endingCountry), true);
       String dijkstraRoute2 = "->" + dijkstraOutput.split(",")[0];
       int dijkstraDistance2 = int(dijkstraOutput.split(",")[1]);
 
@@ -133,7 +135,7 @@ public void initDijkstra(GButton source, GEvent event) {
 
     else{
       // in the format "country1->country2->country3,distance"
-      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry));
+      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry), false);
       dijkstraRoute = dijkstraOutput.split(",")[0];
       dijkstraDistance = int(dijkstraOutput.split(",")[1]);
     }
@@ -174,7 +176,7 @@ public void createGUI(){
   edgeDistCheck = new GCheckbox(toolbarWindow, 200, 10, 200, 50);
   edgeDistCheck.setFont(new Font("SansSerif", Font.PLAIN, 18));
   edgeDistCheck.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
-  edgeDistCheck.setText(" Show Edge Dists");
+  edgeDistCheck.setText(" Show Edge Weights");
   edgeDistCheck.setOpaque(false);
   edgeDistCheck.addEventHandler(this, "edgeDistChecked");
 
