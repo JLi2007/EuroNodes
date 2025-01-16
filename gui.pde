@@ -95,11 +95,11 @@ public void addEdge(GButton source, GEvent event) {
   if(returnNodeWithName(addedEdge1) != null && returnNodeWithName(addedEdge2) != null ){
     Node n1 = returnNodeWithName(addedEdge1);
     Node n2 = returnNodeWithName(addedEdge2);
-    int d = n1.calculateDistance(n1,n2);
-    n1.borderingCountries.put(n2.country, d);
-    n2.borderingCountries.put(n1.country, d);
+    n1.borderingCountries.put(n2.country, n1.calculateDistance(n1,n2));
+    n2.borderingCountries.put(n1.country, n2.calculateDistance(n2,n1));
     n1.createEdges(false);
     n2.createEdges(false);
+    
     // display success message in STATUS
     successStatus = true;
     addEdgeStatus = "S";
@@ -112,19 +112,38 @@ public void addEdge(GButton source, GEvent event) {
 } 
 
 public void initDijkstra(GButton source, GEvent event) { 
-  if(startingCountry != null && endingCountry != null){
+  if(startingCountry != null && endingCountry != null ){
 
-    // in the format "country1->country2->country3,distance"
-    dijkstraOutput= runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry));
-    dijkstraRoute = dijkstraOutput.split(",")[0];
-    dijkstraDistance = int(dijkstraOutput.split(",")[1]);
+    if(passingCountry != null){
+
+      // from starting country to the passing country
+      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry));
+      String dijkstraRoute1 = dijkstraOutput.split(",")[0];
+      int dijkstraDistance1 = int(dijkstraOutput.split(",")[1]);
+
+      // from passing country to the ending country
+      dijkstraOutput = runDijkstra(returnNodeWithName(passingCountry), returnNodeWithName(endingCountry));
+      String dijkstraRoute2 = "->" + dijkstraOutput.split(",")[0];
+      int dijkstraDistance2 = int(dijkstraOutput.split(",")[1]);
+
+      // combine 
+      dijkstraRoute = dijkstraRoute1 + dijkstraRoute2;
+      dijkstraDistance = dijkstraDistance1 + dijkstraDistance2;
+    }
+
+    else{
+      // in the format "country1->country2->country3,distance"
+      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry));
+      dijkstraRoute = dijkstraOutput.split(",")[0];
+      dijkstraDistance = int(dijkstraOutput.split(",")[1]);
+    }
 
     println(dijkstraRoute, dijkstraDistance);
 
     // placeholder
     println("ran dijkstra and populated array var");
-
     println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
+
     successStatus = true;
     showDijkstra = true;
     addEdgeStatus = "N";
@@ -159,7 +178,7 @@ public void createGUI(){
   edgeDistCheck.setOpaque(false);
   edgeDistCheck.addEventHandler(this, "edgeDistChecked");
 
-  startingSelect = new GDropList(toolbarWindow, 20, 90, 150, 100, 5, 10);
+  startingSelect = new GDropList(toolbarWindow, 20, 90, 150, 100, 6, 10);
   startingSelect.setItems(loadStrings("list_countries"), 0);
   startingSelect.addEventHandler(this, "selectStartingCountry");
   starting_label = new GLabel(toolbarWindow, 20, 70, 150, 20);
@@ -168,7 +187,7 @@ public void createGUI(){
   starting_label.setOpaque(false);
   starting_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  endingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 5, 10);
+  endingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 6, 10);
   endingSelect.setItems(loadStrings("list_countries"), 0);
   endingSelect.addEventHandler(this, "selectEndingCountry");
   ending_label = new GLabel(toolbarWindow, 20, 170, 150, 20);
@@ -177,7 +196,7 @@ public void createGUI(){
   ending_label.setOpaque(false);
   ending_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  passingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 5, 10);
+  passingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 6, 10);
   passingSelect.setItems(loadStrings("list_countries2"), 0);
   passingSelect.addEventHandler(this, "selectPassingCountry");
   passing_label = new GLabel(toolbarWindow, 20, 270, 150, 20);
@@ -219,13 +238,15 @@ public void createGUI(){
 
   statusDescription = new GTextArea(toolbarWindow, 10, 430, 380, 60, G4P.SCROLLBARS_NONE);
   statusDescription.setText("Welcome to Euronodes");
-  statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 14) );
+  statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 12) );
   
   // initialize variables   
   startingCountry = returnCountry(startingSelect.getSelectedText());
   startingCity = returnCity(startingSelect.getSelectedText());
   endingCountry = returnCountry(endingSelect.getSelectedText());
   endingCity = returnCity(startingSelect.getSelectedText());
+  passingCountry = null;
+  passingCity = null;
 }
 
 // Variable declarations 

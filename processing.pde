@@ -8,7 +8,7 @@ import java.awt.Font;
 
 PImage map;
 PFont font;
-int borderingDistance = 175; // placeholder for now
+int borderingDistance = 180; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
@@ -43,7 +43,7 @@ void setup(){
     nodes.add(new Node("Sweden", 701, 264, 21));
     nodes.add(new Node("Germany", 626, 419, 20));
     nodes.add(new Node("Finland", 813, 243, 20));
-    nodes.add(new Node("Norway", 583, 247, 20));
+    nodes.add(new Node("Norway", 583, 248, 20));
     nodes.add(new Node("Poland", 748, 424, 19));
     nodes.add(new Node("Italy", 610, 635, 19));
     nodes.add(new Node("United Kingdom", 408, 441, 18));
@@ -155,6 +155,7 @@ int returnEdgeIndex(Node n1, Node n2){
             return i;
         }
     }
+    println(n1.country, n2.country + " not removed");
     return 0;
 }
 

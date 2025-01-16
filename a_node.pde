@@ -96,7 +96,9 @@ class Node{
                 // first, remove the previous edge
                 if(!firstEdges){
                     int removeEdge = returnEdgeIndex(this, n);
-                    edges.remove(removeEdge);
+                    if(removeEdge != 0){
+                        edges.remove(removeEdge);
+                    }
                 }
 
                 // then, add the new edge

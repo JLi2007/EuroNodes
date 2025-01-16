@@ -25,6 +25,7 @@ String runDijkstra(Node n1, Node n2){
         for(int c = 0; c < nodesSize; c++){
             Edge edge = returnEdge(nodes.get(min), nodes.get(c));
             if(edge != null){
+                // println(nodes.get(min).country, nodes.get(c).country);
                 int edgeDist = edge.dist;
                 if(!visited[c] && edgeDist != 0 && distances[min] != Integer.MAX_VALUE){
                     int newDist = distances[min] + edgeDist;
@@ -37,10 +38,17 @@ String runDijkstra(Node n1, Node n2){
         }
     }
 
-    // build the return string
+    printArray(distances);
+
+    // build the return string with java StringBuilder
     StringBuilder path = new StringBuilder();
+    String previousNode = null;
+
     for (int e = endingNode; e != Integer.MIN_VALUE; e = predecessors[e]) {
-        path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
+        if(nodes.get(e).country != previousNode){
+            path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
+            previousNode = nodes.get(e).country;
+        }
     }
 
     return path.toString() + "," + distances[endingNode];
@@ -49,10 +57,9 @@ String runDijkstra(Node n1, Node n2){
 int minDistance(int[] distances, boolean[] visited){
     int min = Integer.MAX_VALUE;
     int minIndex = -1;
-    int nodesSize = nodes.size();
 
     // check if all nodes are visited as if minIndex changes there is an unvisited node
-    for(int c = 0; c < nodesSize; c++){
+    for(int c = 0; c < nodes.size(); c++){
         if(!visited[c] && distances[c] <= min){
             min = distances[c];
             minIndex = c;
