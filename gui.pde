@@ -32,6 +32,25 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       appc.text("x STATUS x", 165, 420);
     }
 
+    // fetch the initial flags
+    if(!showFlags){
+      String s = requestHTTPData(startingCountry);
+      startCountryImg = loadImage(s);
+      String e = requestHTTPData(endingCountry);
+      endCountryImg = loadImage(e);
+
+      showFlags = true;
+    }
+    
+    // show country flags on the gui
+    if(showFlags){
+      appc.image(startCountryImg, 100, 100);
+      appc.image(endCountryImg, 100, 200);
+      if(passingCountry != null){
+        appc.image(passCountryImg, 100, 300);
+      }
+    }
+
     if(showDijkstra){
       statusDescription.setText(endingCity + " is " + dijkstraDistance + " units (" + normalizeDistance(dijkstraDistance) + "km) away from " + startingCity + " \n" + dijkstraRoute);
     }
@@ -55,12 +74,16 @@ public void selectStartingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   startingCountry = returnCountry(startingSelect.getSelectedText());
   startingCity = returnCity(startingSelect.getSelectedText());
+  String c = requestHTTPData(startingCountry);
+  startCountryImg = loadImage(c);
 }
 
 public void selectEndingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   endingCountry = returnCountry(endingSelect.getSelectedText());
   endingCity = returnCity(endingSelect.getSelectedText());
+  String c = requestHTTPData(endingCountry);
+  endCountryImg = loadImage(c);
 }
 
 public void selectPassingCountry(GDropList source, GEvent event) {
@@ -70,6 +93,8 @@ public void selectPassingCountry(GDropList source, GEvent event) {
   if(passingSelect.getSelectedText().equals("N/A") == false){
     passingCountry = returnCountry(passingSelect.getSelectedText());
     passingCity = returnCity(passingSelect.getSelectedText());
+    String c = requestHTTPData(passingCountry);
+    passCountryImg = loadImage(c);
   }
 
   else{
@@ -207,7 +232,7 @@ public void createGUI(){
   passing_label.setOpaque(false);
   passing_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  dijkstra_btn = new GButton(toolbarWindow, 150, 350, 100, 30);
+  dijkstra_btn = new GButton(toolbarWindow, 150, 370, 100, 30);
   dijkstra_btn.setText("Run Algo");
   dijkstra_btn.addEventHandler(this, "initDijkstra");
 

@@ -1,4 +1,5 @@
 import g4p_controls.*;
+import http.requests.*;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -6,10 +7,10 @@ import java.util.Comparator;
 import java.lang.StringBuilder;
 import java.awt.Font;
 
-PImage map;
+PImage map, startCountryImg, endCountryImg, passCountryImg, selectedCountryImg;
 PFont font;
 int borderingDistance = 180; // placeholder for now
-boolean showEdges = false, showEdgeDist = false, firstEdges = true;
+boolean showEdges = false, showEdgeDist = false, firstEdges = true, showFlags = false;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
 String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
@@ -19,6 +20,9 @@ String dijkstraOutput, dijkstraRoute;
 //Arrays
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
+
+// Hashmaps
+HashMap<String, String> mapToIso2;
 
 void setup(){
     size(1100,750);
@@ -57,7 +61,12 @@ void setup(){
         node.printNeighbors();
         node.createEdges(false);
     }
+
+    // the first edges have been created
     firstEdges=false;
+
+    // initialize the hashmap mapping country names to iso2 for the api call\
+    httpSetup();
 }
 
 void draw(){
