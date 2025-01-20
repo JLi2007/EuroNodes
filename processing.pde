@@ -6,8 +6,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.lang.StringBuilder;
 import java.awt.Font;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileOutputStream;
 
-PImage map, startCountryImg, endCountryImg, passCountryImg, selectedCountryImg;
+PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryImg;
 PFont font;
 int borderingDistance = 180; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true, showFlags = false;
@@ -55,6 +60,7 @@ void setup(){
     nodes.add(new Node("Belarus", 854, 388, 17));
     nodes.add(new Node("Greece", 794, 709, 16));
     nodes.add(new Node("Bulgaria", 786, 620, 15));
+    nodes.add(new Node("Iceland", 55, 144, 15));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -65,7 +71,7 @@ void setup(){
     // the first edges have been created
     firstEdges=false;
 
-    // initialize the hashmap mapping country names to iso2 for the api call\
+    // initialize the hashmap mapping country names to iso2 for the api call
     httpSetup();
 }
 
@@ -73,9 +79,9 @@ void draw(){
     background(map);
 
     // draw the lines of reference
-    stroke(0);
+    stroke(0,0,0,150);
     strokeWeight(1);
-    fill(0);
+    fill(0,0,0,150);
 
     // horizontal axis
     for(int x=0; x<width/100; x++){
@@ -89,22 +95,7 @@ void draw(){
         text(str(100*y),20,100*y);
     }
 
-    // semi-transparent rectangles on the left side
-    fill(2, 30, 107, 120);
-    rect(0, 600, 200, 200);
-    fill(97, 5, 39, 120);
-    rect(0, 200, 200, 400);
-
-    // placeholder?
-    fill(0);
-    if(showCountryInfo && selectedCountry != null){
-      text(selectedCountry, 10, 250);
-    }
-    else{
-      text("Select a country on the UI to display information", 10, 250);
-    }
-
-    // draw node and edges
+    // draw nodes
     for(Node node: nodes){
         node.drawNode();
 
@@ -114,7 +105,9 @@ void draw(){
         }
     }
     
+    // draw the edges
     if(showEdges){
+        // based on checkbox state
         for(Edge edge: edges){
             edge.showEdge();
         }
@@ -122,6 +115,30 @@ void draw(){
             edge.showEdgeDist();
         }
     }
+
+    // semi-transparent rectangles on the left side
+    stroke(0,0,0,150);
+    strokeWeight(1);
+    fill(2, 30, 107, 150);
+    rect(0, 600, 200, 200);
+    fill(97, 5, 39, 150);
+    rect(0, 200, 200, 400);
+    fill(97, 5, 39, 180);
+    stroke(97, 5, 39, 180);
+    rect(0, 210, 30, 380);
+
+    // create and display the rotated text
+    fill(2, 30, 107);
+    pushMatrix();
+    translate(10, 400);
+    rotate(-HALF_PI);
+    if(showCountryInfo && selectedCountry != null){
+      text(selectedCountry, 0, 0);
+    }
+    else{
+      text("Select a country on the UI to display information", 0, 0);
+    }
+    popMatrix();
 }
 
 // return the Node with name of country

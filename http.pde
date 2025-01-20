@@ -30,16 +30,74 @@ void httpSetup(){
     mapToIso2.put("Europe", "EU");
 }
 
-String requestHTTPData(String c){
+// call the country flags api
+String requestHTTPFlag(String c){
     String country = mapToIso2.get(c);
+
     if(country != null){
-        return "https://flagsapi.com/"+country+"/shiny/64.png";
+       return "https://flagsapi.com/"+country+"/shiny/64.png"; 
     }
     else{
         return null;
     }
-
 }   
+
+// call the pexels api
+String requestHTTPImage(String c){
+    String pexelsKey = "7oES3VxqNNpE9xjrCYnoKGGKMotGzhL0mE4Tzn66k8cYt6Zv38dPCxcO";
+    String pixelsEndpoint = "https://api.pexels.com/v1/search?query=" + c + "%20skyline&per_page=20";
+
+    GetRequest pexelsGet = new GetRequest(pixelsEndpoint);
+    pexelsGet.addHeader("Authorization", pexelsKey); //"Client-ID " + 
+    pexelsGet.send();
+
+    JSONObject response = parseJSONObject(pexelsGet.getContent());
+    String src = response.getJSONArray("photos").getJSONObject(int(random(0,12))).getJSONObject("src").getString("tiny");
+
+    if(src != null){
+        println(src);
+        return src;
+    }
+    else{
+        return null;
+    }
+}
+
+PImage loadImageFromURL(String urlString) {
+  try {
+    URL url = new URL(urlString);
+    URLConnection connection = url.openConnection();
+    
+    // due to CORS issues on the API, Processing returns a 403 error when trying to access the urlString it's the actual link
+    // requires adding a User Agent to bypass this security
+    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+
+    // connect to the URL
+    connection.connect();
+
+    InputStream inputStream = connection.getInputStream();
+      
+    // create a temporary file to save the image to local
+    File tempFile = File.createTempFile("tempImage", ".jpg");
+
+    // delete temp file on program exit
+    tempFile.deleteOnExit();
+    
+    // Write the input stream (image data) to the temporary file
+    FileOutputStream outputStream = new FileOutputStream(tempFile);
+    byte[] buffer = new byte[4096];
+    int bytesRead;
+    while ((bytesRead = inputStream.read(buffer)) != -1) {
+        outputStream.write(buffer, 0, bytesRead);
+    }
+
+    return loadImage(tempFile.getAbsolutePath());
+
+  } catch (Exception e) {
+    e.printStackTrace();
+    return null;
+  }
+}
 
 
     // // endpoints

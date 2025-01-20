@@ -3,16 +3,10 @@
  * =========================================================
  * The code in this tab has been generated from the GUI form
  * designer and care should be taken when editing this file.
- * Only add/edit code inside the event handlers i.e. only
- * use lines between the matching comment tags. e.g.
-
- void myBtnEvents(GButton button)
-     // It is safe to enter your event code here  
-
- 
  * Do not rename this tab!
  * =========================================================
  */
+ 
 synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     appc.background(230);
     appc.fill(196, 196, 196);
@@ -32,22 +26,36 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       appc.text("x STATUS x", 165, 420);
     }
 
-    // fetch the initial flags
+    // fetch the initial flags and images
     if(!showFlags){
-      String s = requestHTTPData(startingCountry);
-      startCountryImg = loadImage(s);
-      String e = requestHTTPData(endingCountry);
-      endCountryImg = loadImage(e);
+      String s = requestHTTPFlag(startingCountry);
+      startCountryFlag = loadImage(s);
+      String e = requestHTTPFlag(endingCountry);
+      endCountryFlag = loadImage(e);
+      
+      String sImg = requestHTTPImage(startingCountry);
+      startCountryImg = loadImageFromURL(sImg);
+      String eImg = requestHTTPImage(endingCountry);
+      endCountryImg = loadImageFromURL(eImg);
 
       showFlags = true;
     }
     
     // show country flags on the gui
     if(showFlags){
-      appc.image(startCountryImg, 100, 100);
-      appc.image(endCountryImg, 100, 200);
-      if(passingCountry != null){
-        appc.image(passCountryImg, 100, 300);
+      appc.image(startCountryFlag, 100, 100);
+      appc.image(endCountryFlag, 100, 200);
+
+      appc.image(startCountryImg, 200, 75, 175, 100);
+      appc.image(endCountryImg, 200, 175, 175, 100);
+
+      try{
+        if(passingCountry != null){
+          appc.image(passCountryFlag, 100, 300);
+          appc.image(passCountryImg, 200, 275, 175, 100);
+        }
+      }catch(NullPointerException e){
+        println(e);
       }
     }
 
@@ -74,16 +82,20 @@ public void selectStartingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   startingCountry = returnCountry(startingSelect.getSelectedText());
   startingCity = returnCity(startingSelect.getSelectedText());
-  String c = requestHTTPData(startingCountry);
-  startCountryImg = loadImage(c);
+  String flag = requestHTTPFlag(startingCountry);
+  startCountryFlag = loadImage(flag);
+  String sImg = requestHTTPImage(startingCountry);
+  startCountryImg = loadImageFromURL(sImg);
 }
 
 public void selectEndingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   endingCountry = returnCountry(endingSelect.getSelectedText());
   endingCity = returnCity(endingSelect.getSelectedText());
-  String c = requestHTTPData(endingCountry);
-  endCountryImg = loadImage(c);
+  String flag = requestHTTPFlag(endingCountry);
+  endCountryFlag = loadImage(flag);
+  String eImg = requestHTTPImage(endingCountry);
+  endCountryImg = loadImageFromURL(eImg);
 }
 
 public void selectPassingCountry(GDropList source, GEvent event) {
@@ -93,8 +105,10 @@ public void selectPassingCountry(GDropList source, GEvent event) {
   if(passingSelect.getSelectedText().equals("N/A") == false){
     passingCountry = returnCountry(passingSelect.getSelectedText());
     passingCity = returnCity(passingSelect.getSelectedText());
-    String c = requestHTTPData(passingCountry);
-    passCountryImg = loadImage(c);
+    String flag = requestHTTPFlag(passingCountry);
+    passCountryFlag = loadImage(flag);
+    String pImg = requestHTTPImage(passingCountry);
+    passCountryImg = loadImageFromURL(pImg);
   }
 
   else{
