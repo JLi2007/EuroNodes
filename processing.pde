@@ -12,9 +12,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 
-PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryImg;
+PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryFlag;
 PFont font;
-int borderingDistance = 180; // placeholder for now
+int borderingDistance = 195; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true, showFlags = false;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
@@ -58,9 +58,10 @@ void setup(){
     nodes.add(new Node("United Kingdom", 408, 441, 18));
     nodes.add(new Node("Romania", 830, 585, 18));
     nodes.add(new Node("Belarus", 854, 388, 17));
-    nodes.add(new Node("Greece", 794, 709, 16));
+    nodes.add(new Node("Greece", 793, 709, 16));
     nodes.add(new Node("Bulgaria", 786, 620, 15));
     nodes.add(new Node("Iceland", 55, 144, 15));
+    nodes.add(new Node("Hungary", 715, 522, 14));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -123,11 +124,11 @@ void draw(){
     rect(0, 600, 200, 200);
     fill(97, 5, 39, 150);
     rect(0, 200, 200, 400);
-    fill(97, 5, 39, 180);
-    stroke(97, 5, 39, 180);
+    fill(97, 5, 39, 160);
+    stroke(97, 5, 39, 160);
     rect(0, 210, 30, 380);
 
-    // create and display the rotated text
+    // create and display text rotated 180 degrees
     fill(2, 30, 107);
     pushMatrix();
     translate(10, 400);
@@ -139,6 +140,15 @@ void draw(){
       text("Select a country on the UI to display information", 0, 0);
     }
     popMatrix();
+    
+    // update the sidebar
+    if(showCountryInfo && selectedCountry!=null){
+      String flag = requestHTTPFlag(selectedCountry);
+      selectedCountryFlag = loadImage(flag);
+      image(selectedCountryFlag, 70, 250);
+
+      Node n1 = returnNodeWithName(selectedCountry);
+    }
 }
 
 // return the Node with name of country

@@ -48,10 +48,12 @@ String requestHTTPImage(String c){
     String pixelsEndpoint = "https://api.pexels.com/v1/search?query=" + c + "%20skyline&per_page=20";
 
     GetRequest pexelsGet = new GetRequest(pixelsEndpoint);
-    pexelsGet.addHeader("Authorization", pexelsKey); //"Client-ID " + 
+    pexelsGet.addHeader("Authorization", pexelsKey);
     pexelsGet.send();
 
     JSONObject response = parseJSONObject(pexelsGet.getContent());
+
+    // access the tiny image url in the json Object data, picks a random object on the page, indicatating a random photo
     String src = response.getJSONArray("photos").getJSONObject(int(random(0,12))).getJSONObject("src").getString("tiny");
 
     if(src != null){
@@ -65,6 +67,8 @@ String requestHTTPImage(String c){
 
 PImage loadImageFromURL(String urlString) {
   try {
+
+    // open a java URL connection with the url string
     URL url = new URL(urlString);
     URLConnection connection = url.openConnection();
     

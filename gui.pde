@@ -41,7 +41,7 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       showFlags = true;
     }
     
-    // show country flags on the gui
+    // show country flags and pexel fetched images on the gui
     if(showFlags){
       appc.image(startCountryFlag, 100, 100);
       appc.image(endCountryFlag, 100, 200);
@@ -219,7 +219,7 @@ public void createGUI(){
   edgeDistCheck.setOpaque(false);
   edgeDistCheck.addEventHandler(this, "edgeDistChecked");
 
-  startingSelect = new GDropList(toolbarWindow, 20, 90, 150, 100, 6, 10);
+  startingSelect = new GDropList(toolbarWindow, 20, 90, 150, 100, 6, 15);
   startingSelect.setItems(loadStrings("list_countries"), 0);
   startingSelect.addEventHandler(this, "selectStartingCountry");
   starting_label = new GLabel(toolbarWindow, 20, 70, 150, 20);
@@ -228,7 +228,7 @@ public void createGUI(){
   starting_label.setOpaque(false);
   starting_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  endingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 6, 10);
+  endingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 6, 15);
   endingSelect.setItems(loadStrings("list_countries"), 0);
   endingSelect.addEventHandler(this, "selectEndingCountry");
   ending_label = new GLabel(toolbarWindow, 20, 170, 150, 20);
@@ -237,7 +237,7 @@ public void createGUI(){
   ending_label.setOpaque(false);
   ending_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  passingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 6, 10);
+  passingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 6, 15);
   passingSelect.setItems(loadStrings("list_countries2"), 0);
   passingSelect.addEventHandler(this, "selectPassingCountry");
   passing_label = new GLabel(toolbarWindow, 20, 270, 150, 20);
@@ -271,11 +271,11 @@ public void createGUI(){
   add_edge_btn.addEventHandler(this, "addEdge");
   add_edge_btn.setLocalColorScheme(GCScheme.RED_SCHEME);
 
-  adding_edge_label = new GLabel(this, 0, 200, 200, 20);
-  adding_edge_label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
-  adding_edge_label.setText("Country Info");
-  adding_edge_label.setOpaque(false);
-  adding_edge_label.setFont(new Font("SansSerif", Font.PLAIN, 15));
+  info_label = new GLabel(this, 0, 200, 200, 20);
+  info_label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
+  info_label.setText("Country Info");
+  info_label.setOpaque(false);
+  info_label.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
   statusDescription = new GTextArea(toolbarWindow, 10, 430, 380, 60, G4P.SCROLLBARS_NONE);
   statusDescription.setText("Welcome to Euronodes");
