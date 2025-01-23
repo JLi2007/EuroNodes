@@ -39,7 +39,7 @@ class Edge{
                 stroke(this.currentStroke);
                 strokeWeight(1);
 
-                // if statements to handle the size of the edge Weight on UI
+                // if statements to handle the size of the Edge Weight on UI
                 if(this.dist>150){
                     textSize(15);
                     rect(x-15,y-9,30,20);
@@ -52,6 +52,7 @@ class Edge{
                     textSize(12);
                     rect(x-12,y-7,24,16);
                 }
+
                 fill(this.currentStroke);
                 text(this.dist, x, y);
             }

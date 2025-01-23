@@ -28,18 +28,21 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
 
     // fetch the initial flags and images
     if(!showFlags){
+      println("not started");
+      httpSetup();
       String s = requestHTTPFlag(startingCountry);
-      startCountryFlag = loadImage(s);
       String e = requestHTTPFlag(endingCountry);
+      startCountryFlag = loadImage(s);
       endCountryFlag = loadImage(e);
       
       String sImg = requestHTTPImage(startingCountry);
-      startCountryImg = loadImageFromURL(sImg);
       String eImg = requestHTTPImage(endingCountry);
+      startCountryImg = loadImageFromURL(sImg);
       endCountryImg = loadImageFromURL(eImg);
 
-      showFlags = true;
+      // showFlags = true;
     }
+    showFlags = true;
     
     // show country flags and pexel fetched images on the gui
     if(showFlags){
@@ -63,11 +66,14 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       statusDescription.setText(endingCity + " is " + dijkstraDistance + " units (" + normalizeDistance(dijkstraDistance) + "km) away from " + startingCity + " \n" + dijkstraRoute);
     }
     else if(addEdgeStatus.equals("F")){
-      statusDescription.setText("CANNOT add edge, country name(s) spelled wrong or the country(s) do not exist on the map");
+      statusDescription.setText("CANNOT add edge, country name(s) spelled wrong or the country(s) do not exist on the map. Make sure to use the spelling on the UI");
     }
     else if(addEdgeStatus.equals("S")){
       statusDescription.setText("Added edge from " + addedEdge1.toUpperCase() + " to " + addedEdge2.toUpperCase());
     }  
+    else{
+      statusDescription.setText("Welcome to Euronodes!");
+    }
 } 
 
 public void edgesChecked(GCheckbox source, GEvent event) { 
@@ -115,6 +121,24 @@ public void selectPassingCountry(GDropList source, GEvent event) {
     passingCountry = null;
     passingCity = null;
   }
+}
+
+public void openWiki(GButton source, GEvent event){
+  link("https://en.wikipedia.org/wiki/" + selectedCountry);
+}
+
+public void openPexels(GButton source, GEvent event){
+  link("https://www.pexels.com/search/"+selectedCountry+"%20famous/");
+}
+
+void showGUIButtons(){
+  wiki_btn.setVisible(true);
+  pexels_btn.setVisible(true);
+}
+
+void hideGUIButtons(){
+  wiki_btn.setVisible(false);
+  pexels_btn.setVisible(false);
 }
 
 public void inputEdge1(GTextField source, GEvent event) { 
@@ -277,6 +301,16 @@ public void createGUI(){
   info_label.setOpaque(false);
   info_label.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
+  wiki_btn = new GButton(this, 50, 430, 100, 30);
+  wiki_btn.setText("Wiki Page");
+  wiki_btn.addEventHandler(this, "openWiki");
+  wiki_btn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+
+  pexels_btn = new GButton(this, 50, 470, 100, 30);
+  pexels_btn.setText("Images");
+  pexels_btn.addEventHandler(this, "openPexels");
+  pexels_btn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+
   statusDescription = new GTextArea(toolbarWindow, 10, 430, 380, 60, G4P.SCROLLBARS_NONE);
   statusDescription.setText("Welcome to Euronodes");
   statusDescription.setFont( new Font("SansSerif", Font.PLAIN, 12) );
@@ -296,6 +330,6 @@ GWindow toolbarWindow;
 GCheckbox edgesCheck, edgeDistCheck; 
 GDropList startingSelect, endingSelect, passingSelect; 
 GLabel starting_label, ending_label, passing_label, adding_edge_label, info_label; 
-GButton dijkstra_btn, add_edge_btn; 
+GButton dijkstra_btn, add_edge_btn, wiki_btn, pexels_btn; 
 GTextField addEdge1, addEdge2;
 GTextArea statusDescription;

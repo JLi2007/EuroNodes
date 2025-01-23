@@ -1,3 +1,4 @@
+// Imports
 import g4p_controls.*;
 import http.requests.*;
 import java.util.Map;
@@ -12,9 +13,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 
+// Variables
 PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryFlag;
-PFont font;
-int borderingDistance = 195; // placeholder for now
+PFont defaultFont;
+int borderingDistance = 120; // placeholder for now
 boolean showEdges = false, showEdgeDist = false, firstEdges = true, showFlags = false;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
@@ -27,21 +29,24 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
 
 // Hashmaps
-HashMap<String, String> mapToIso2;
+HashMap<String, String> mapToIso2 = new HashMap<String, String>();
 
 void setup(){
     size(1100,750);
     // start the surface on the top left corner of computer screen
     surface.setLocation(0, 0);
     map = loadImage("europe.jpg");
+
+    // initialize the hashmap mapping country names to iso2 for the api call
     createGUI();
+
     smooth();
     strokeJoin(ROUND);
     strokeCap(ROUND);
 
     // font
-    font = createFont("SansSerif", 15);
-    textFont(font);
+    defaultFont = createFont("SansSerif", 15);
+    textFont(defaultFont);
     textAlign(CENTER, CENTER);
 
     // create all the countries (nodes)
@@ -52,16 +57,23 @@ void setup(){
     nodes.add(new Node("Sweden", 701, 264, 21));
     nodes.add(new Node("Germany", 626, 419, 20));
     nodes.add(new Node("Finland", 813, 243, 20));
-    nodes.add(new Node("Norway", 583, 248, 20));
+    nodes.add(new Node("Norway", 583, 250, 20));
     nodes.add(new Node("Poland", 748, 424, 19));
     nodes.add(new Node("Italy", 610, 635, 19));
     nodes.add(new Node("United Kingdom", 408, 441, 18));
     nodes.add(new Node("Romania", 830, 585, 18));
     nodes.add(new Node("Belarus", 854, 388, 17));
     nodes.add(new Node("Greece", 793, 709, 16));
-    nodes.add(new Node("Bulgaria", 786, 620, 15));
+    nodes.add(new Node("Bulgaria", 785, 620, 15));
     nodes.add(new Node("Iceland", 55, 144, 15));
-    nodes.add(new Node("Hungary", 715, 522, 14));
+    nodes.add(new Node("Hungary", 718, 523, 14));
+    nodes.add(new Node("Portugal", 262, 696, 14));
+    nodes.add(new Node("Austria", 673, 510, 13));
+    nodes.add(new Node("Czechia", 642, 470, 12));
+    nodes.add(new Node("Serbia", 740, 578, 12));
+
+    returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Norway"));
+    returnNodeWithName("Russia").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
     
     for(Node node:nodes){
         node.addDefaultNeighbors();
@@ -69,11 +81,13 @@ void setup(){
         node.createEdges(false);
     }
 
+    // manual adding/re,oving of neighbors to create a realistic starting UI
+    returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Czechia"));
+    returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Bulgaria"));
+    returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Bulgaria"));
+
     // the first edges have been created
     firstEdges=false;
-
-    // initialize the hashmap mapping country names to iso2 for the api call
-    httpSetup();
 }
 
 void draw(){
@@ -128,26 +142,56 @@ void draw(){
     stroke(97, 5, 39, 160);
     rect(0, 210, 30, 380);
 
-    // create and display text rotated 180 degrees
+    // uses basic matrixes to create and display text rotated 180 degrees
     fill(2, 30, 107);
     pushMatrix();
-    translate(10, 400);
+    translate(11, 400);
     rotate(-HALF_PI);
     if(showCountryInfo && selectedCountry != null){
+      textSize(21);
       text(selectedCountry, 0, 0);
+      textSize(15);
     }
     else{
       text("Select a country on the UI to display information", 0, 0);
     }
     popMatrix();
     
-    // update the sidebar
+    // update the sidebar if a country is selected
     if(showCountryInfo && selectedCountry!=null){
-      String flag = requestHTTPFlag(selectedCountry);
-      selectedCountryFlag = loadImage(flag);
-      image(selectedCountryFlag, 70, 250);
+        showGUIButtons();
+        text("Closest Border", 100, 300);
+        text("Furthest Border", 100, 375);
 
-      Node n1 = returnNodeWithName(selectedCountry);
+        // request the flag of selected country, load it, and display it
+        String flag = requestHTTPFlag(selectedCountry);
+        selectedCountryFlag = loadImage(flag);
+        image(selectedCountryFlag, 70, 225);
+        image(selectedCountryFlag, 70, 525);
+
+        // return the closest and the furthest border (based of distance)
+        Node n1 = returnNodeWithName(selectedCountry);
+        String[] c = n1.returnNeighbors();
+        
+        // display the bordering country names on screen
+        textSize(21);
+
+        // special consideration to "United Kingdom" as the name is too long for size 21 font
+        if(c[0].equals("United Kingdom")){
+            textSize(16);
+        }
+        text(c[0], 100, 325);
+        if(c[1].equals("United Kingdom")){
+            textSize(16);
+        }
+        text(c[1], 100, 400);
+
+        // reset text size
+        textSize(15);
+    }
+
+    if(!showCountryInfo){
+        hideGUIButtons();
     }
 }
 

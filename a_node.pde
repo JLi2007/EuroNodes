@@ -29,7 +29,7 @@ class Node{
     // on mouse event
     void unselectState(){
         // unselect node case 1 | another node is selected
-        if (this.isSelected && !isMouseInside()){
+        if (this.isSelected && !isMouseInside() && !isMouseOnUI()){
             println("released " + this.country);
             this.currentColour = this.defaultColour;
             this.currentStroke = this.defaultStroke;
@@ -60,7 +60,19 @@ class Node{
             showCountryInfo = false;
         }
     }
+        // checks if mouse is inside the node
+    boolean isMouseInside(){
+        return dist(mouseX, mouseY, this.x, this.y) <= this.radius;
+    }
 
+    boolean isMouseOnUI(){
+        if(mouseX>0&&mouseX<200&&mouseY>200&&mouseY<600){
+            return true;
+        }
+        return false;
+    }
+
+    // add all "default neighbors"
     void addDefaultNeighbors(){
         for(int n = 0; n<=nodes.size()-1; n++){
             int d = calculateDistance(this, nodes.get(n));
@@ -68,6 +80,21 @@ class Node{
                 this.borderingCountries.put(nodes.get(n).country, d);
             }
         }
+    }
+
+    // adds an additional neighbor both ways
+    void addAdditionalNeighbor(Node n1){
+        int d = calculateDistance(this, n1);
+        this.borderingCountries.put(n1.country, d);
+        n1.borderingCountries.put(this.country, d);
+    }
+
+    void removeNeighbor(Node n1){
+        edges.remove(returnEdgeIndex(this, n1));
+        edges.remove(returnEdgeIndex(n1, this));
+
+        this.borderingCountries.remove(n1.country);
+        n1.borderingCountries.remove(this.country); 
     }
 
     // prints the hashmap to visualize the neighbors in terminal
@@ -85,6 +112,26 @@ class Node{
             println(country.getValue() + " units away");
         }
         println("-------------------------------------");
+    }
+
+    // sorts the hashmap to return the closest and furthest neighbor
+    String[] returnNeighbors(){
+        String[] returnString = new String[this.borderingCountries.size()];
+        List<Map.Entry<String, Integer>> sortedBorderingCountries = new ArrayList<>(this.borderingCountries.entrySet());
+        sortedBorderingCountries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)); 
+
+        int c = 0;
+        for (Map.Entry country: sortedBorderingCountries){
+            if(c==1){
+                returnString[0] = country.getKey().toString();
+            }
+            if(c==sortedBorderingCountries.size() - 1){
+                returnString[1] = country.getKey().toString();
+            }
+            c++;
+        }
+
+        return returnString;
     }
 
     // create edges with all its neighbors
@@ -105,11 +152,6 @@ class Node{
                 edges.add(new Edge(this, n, country.getValue(), selected));
             }
         }
-    }
-
-    // checks if mouse is inside the node
-    boolean isMouseInside(){
-        return dist(mouseX, mouseY, this.x, this.y) <= this.radius;
     }
 
     // calculate distance between two nodes
