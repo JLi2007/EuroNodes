@@ -53,32 +53,50 @@ void setup(){
     nodes.add(new Node("Russia", 1017, 346, 45));
     nodes.add(new Node("Ukraine", 902, 463, 25));
     nodes.add(new Node("France", 448, 496, 22));
-    nodes.add(new Node("Spain", 350, 664, 21));
-    nodes.add(new Node("Sweden", 701, 264, 21));
+    nodes.add(new Node("Spain", 351, 665, 21));
+    nodes.add(new Node("Sweden", 701, 265, 21));
     nodes.add(new Node("Germany", 626, 419, 20));
     nodes.add(new Node("Finland", 813, 243, 20));
     nodes.add(new Node("Norway", 583, 250, 20));
-    nodes.add(new Node("Poland", 748, 424, 19));
-    nodes.add(new Node("Italy", 610, 635, 19));
+    nodes.add(new Node("Poland", 748, 425, 19));
+    nodes.add(new Node("Italy", 610, 636, 19));
     nodes.add(new Node("United Kingdom", 408, 441, 18));
     nodes.add(new Node("Romania", 830, 585, 18));
     nodes.add(new Node("Belarus", 854, 388, 17));
-    nodes.add(new Node("Greece", 793, 709, 16));
+    nodes.add(new Node("Greece", 793, 710, 16));
     nodes.add(new Node("Bulgaria", 785, 620, 15));
     nodes.add(new Node("Iceland", 55, 144, 15));
-    nodes.add(new Node("Hungary", 718, 523, 14));
+    nodes.add(new Node("Hungary", 717, 524, 14));
     nodes.add(new Node("Portugal", 262, 696, 14));
     nodes.add(new Node("Austria", 673, 510, 13));
     nodes.add(new Node("Czechia", 642, 470, 12));
-    nodes.add(new Node("Serbia", 740, 578, 12));
+    nodes.add(new Node("Serbia", 739, 578, 12));
+    nodes.add(new Node("Ireland", 309, 401, 12));
+    nodes.add(new Node("Lithuania", 818, 371, 12));
+    nodes.add(new Node("Latvia", 798, 320, 11));
+    nodes.add(new Node("Denmark", 612, 348, 10));
+    nodes.add(new Node("Netherlands", 489, 422, 10));
+    nodes.add(new Node("Switzerland", 530, 537, 9));
+    nodes.add(new Node("Belgium", 480, 455, 9));
 
     returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Norway"));
+    returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Ireland"));
     returnNodeWithName("Russia").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
+    returnNodeWithName("Russia").addAdditionalNeighbor(returnNodeWithName("Finland"));
+    returnNodeWithName("Spain").addAdditionalNeighbor(returnNodeWithName("France"));
+    returnNodeWithName("Italy").addAdditionalNeighbor(returnNodeWithName("Greece"));
+    returnNodeWithName("Italy").addAdditionalNeighbor(returnNodeWithName("France"));
+    returnNodeWithName("Italy").addAdditionalNeighbor(returnNodeWithName("Switzerland"));
+    returnNodeWithName("Italy").addAdditionalNeighbor(returnNodeWithName("Austria"));
+    returnNodeWithName("Germany").addAdditionalNeighbor(returnNodeWithName("Switzerland"));
+    returnNodeWithName("Germany").addAdditionalNeighbor(returnNodeWithName("Netherlands"));
+    returnNodeWithName("Germany").addAdditionalNeighbor(returnNodeWithName("Poland"));
+    returnNodeWithName("Denmark").addAdditionalNeighbor(returnNodeWithName("Sweden"));
+    returnNodeWithName("Poland").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
+    returnNodeWithName("Ireland").addAdditionalNeighbor(returnNodeWithName("Portugal"));
 
-    for(Node node:nodes){
+    for(Node node: nodes){
         node.addDefaultNeighbors();
-        node.printNeighbors();
-        node.createEdges(false);
     }
 
     // manual adding/re,oving of neighbors to create a realistic starting UI
@@ -86,6 +104,16 @@ void setup(){
     returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Bulgaria"));
     returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Bulgaria"));
     returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Serbia"));
+    returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Germany"));
+    returnNodeWithName("Poland").removeNeighbor(returnNodeWithName("Hungary"));
+    returnNodeWithName("Poland").removeNeighbor(returnNodeWithName("Austria"));
+    returnNodeWithName("Poland").removeNeighbor(returnNodeWithName("Latvia"));
+    returnNodeWithName("France").removeNeighbor(returnNodeWithName("Netherlands"));
+
+    for(Node node: nodes){
+        node.printNeighbors();
+        node.createEdges(false);
+    }
 
     // the first edges have been created
     firstEdges=false;
@@ -137,7 +165,7 @@ void draw(){
     strokeWeight(1);
     fill(2, 30, 107, 150);
     rect(0, 600, 200, 200);
-    fill(97, 5, 39, 150);
+    fill(97, 5, 39, 180);
     rect(0, 200, 200, 400);
     fill(97, 5, 39, 160);
     stroke(97, 5, 39, 160);

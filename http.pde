@@ -99,9 +99,10 @@ void httpSetup(){
     mapToIso2.put("Ireland", "IE");
     mapToIso2.put("Lithuania", "LT");
     mapToIso2.put("Latvia", "LV");
+    mapToIso2.put("Denmark", "DK");
     mapToIso2.put("Netherlands", "NL");
+    mapToIso2.put("Switzerland", "CH");
     mapToIso2.put("Belgium", "BE");
-    println("****");
 }
 
 

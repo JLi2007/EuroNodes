@@ -90,9 +90,6 @@ class Node{
     }
 
     void removeNeighbor(Node n1){
-        edges.remove(returnEdgeIndex(this, n1));
-        edges.remove(returnEdgeIndex(n1, this));
-
         this.borderingCountries.remove(n1.country);
         n1.borderingCountries.remove(this.country); 
     }

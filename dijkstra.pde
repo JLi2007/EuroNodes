@@ -34,6 +34,8 @@ String runDijkstra(Node n1, Node n2, boolean passing){
                         predecessors[c] = min;
                     }
                 }
+            }else{
+                print("*");
             }
         }
     }
@@ -79,6 +81,7 @@ int minDistance(int[] distances, boolean[] visited){
             minIndex = c;
         }
     }
+    println(minIndex);
     return minIndex;
 }
 
