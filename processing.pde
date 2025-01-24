@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
 PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryFlag;
 PFont defaultFont;
 int borderingDistance = 120; // placeholder for now
-boolean showEdges = false, showEdgeDist = false, firstEdges = true;
+boolean showEdges = false, showEdgeDist = false, firstEdges = true, showGrid = false;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
 String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
@@ -54,23 +54,23 @@ void setup(){
     nodes.add(new Node("Ukraine", 902, 463, 25));
     nodes.add(new Node("France", 448, 496, 22));
     nodes.add(new Node("Spain", 351, 665, 21));
-    nodes.add(new Node("Sweden", 701, 265, 21));
+    nodes.add(new Node("Sweden", 701, 264, 21));
     nodes.add(new Node("Germany", 626, 419, 20));
     nodes.add(new Node("Finland", 813, 243, 20));
     nodes.add(new Node("Norway", 583, 250, 20));
     nodes.add(new Node("Poland", 748, 425, 19));
     nodes.add(new Node("Italy", 610, 636, 19));
-    nodes.add(new Node("United Kingdom", 408, 441, 18));
-    nodes.add(new Node("Romania", 830, 585, 18));
+    nodes.add(new Node("United Kingdom", 407, 441, 18));
+    nodes.add(new Node("Romania", 831, 586, 18));
     nodes.add(new Node("Belarus", 854, 388, 17));
     nodes.add(new Node("Greece", 793, 710, 16));
     nodes.add(new Node("Bulgaria", 785, 620, 15));
     nodes.add(new Node("Iceland", 55, 144, 15));
     nodes.add(new Node("Hungary", 717, 524, 14));
-    nodes.add(new Node("Portugal", 262, 696, 14));
+    nodes.add(new Node("Portugal", 262, 697, 14));
     nodes.add(new Node("Austria", 673, 510, 13));
     nodes.add(new Node("Czechia", 642, 470, 12));
-    nodes.add(new Node("Serbia", 739, 578, 12));
+    nodes.add(new Node("Serbia", 738, 578, 12));
     nodes.add(new Node("Ireland", 309, 401, 12));
     nodes.add(new Node("Lithuania", 818, 371, 12));
     nodes.add(new Node("Latvia", 798, 320, 11));
@@ -127,16 +127,18 @@ void draw(){
     strokeWeight(1);
     fill(0,0,0,150);
 
-    // horizontal axis
-    for(int x=0; x<width/100; x++){
-        line(100*x, 0, 100*x, height);
-        text(str(100*x),100*x,10);
-    }
+    if(showGrid){
+        // horizontal axis
+        for(int x=0; x<width/100; x++){
+            line(100*x, 0, 100*x, height);
+            text(str(100*x),100*x,10);
+        }
 
-    // vertical axis
-    for(int y=1; y<=height/100; y++){
-        line(0,100*y,width,100*y);
-        text(str(100*y),20,100*y);
+        // vertical axis
+        for(int y=1; y<=height/100; y++){
+            line(0,100*y,width,100*y);
+            text(str(100*y),20,100*y);
+        }
     }
 
     // draw nodes
