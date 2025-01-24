@@ -25,41 +25,23 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       appc.fill(199, 8, 21);
       appc.text("x STATUS x", 165, 420);
     }
-
-    // fetch the initial flags and images
-    if(!showFlags){
-      println("not started");
-      httpSetup();
-      String s = requestHTTPFlag(startingCountry);
-      String e = requestHTTPFlag(endingCountry);
-      startCountryFlag = loadImage(s);
-      endCountryFlag = loadImage(e);
-      
-      String sImg = requestHTTPImage(startingCountry);
-      String eImg = requestHTTPImage(endingCountry);
-      startCountryImg = loadImageFromURL(sImg);
-      endCountryImg = loadImageFromURL(eImg);
-
-      // showFlags = true;
-    }
-    showFlags = true;
     
     // show country flags and pexel fetched images on the gui
-    if(showFlags){
+    if(startCountryFlag != null){
       appc.image(startCountryFlag, 100, 100);
       appc.image(endCountryFlag, 100, 200);
+    }
 
-      appc.image(startCountryImg, 200, 75, 175, 100);
-      appc.image(endCountryImg, 200, 175, 175, 100);
+    appc.image(startCountryImg, 200, 75, 175, 100);
+    appc.image(endCountryImg, 200, 175, 175, 100);
 
-      try{
-        if(passingCountry != null){
-          appc.image(passCountryFlag, 100, 300);
-          appc.image(passCountryImg, 200, 275, 175, 100);
-        }
-      }catch(NullPointerException e){
-        println(e);
+    try{
+      if(passingCountry != null){
+        appc.image(passCountryFlag, 100, 300);
+        appc.image(passCountryImg, 200, 275, 175, 100);
       }
+    }catch(NullPointerException e){
+      println(e);
     }
 
     if(showDijkstra){
@@ -226,8 +208,6 @@ public void createGUI(){
   toolbarWindow = GWindow.getWindow(this, "Toolbar", 1100, 0, 400, 500, JAVA2D);
   toolbarWindow.noLoop();
   toolbarWindow.setActionOnClose(G4P.KEEP_OPEN);
-  toolbarWindow.addDrawHandler(this, "draw_toolbarWindow");
-  toolbarWindow.loop();
 
   edgesCheck = new GCheckbox(toolbarWindow, 20, 10, 200, 50);
   edgesCheck.setFont(new Font("SansSerif", Font.PLAIN, 18));
@@ -322,6 +302,23 @@ public void createGUI(){
   endingCity = returnCity(startingSelect.getSelectedText());
   passingCountry = null;
   passingCity = null;
+
+      // fetch the initial flags and images
+  httpSetup();
+  String s = requestHTTPFlag(startingCountry);
+  String e = requestHTTPFlag(endingCountry);
+  if (s != null && e != null) {
+    startCountryFlag = loadImage(s);
+    endCountryFlag = loadImage(e);
+
+    String sImg = requestHTTPImage(startingCountry);
+    String eImg = requestHTTPImage(endingCountry);
+    startCountryImg = loadImageFromURL(sImg);
+    endCountryImg = loadImageFromURL(eImg);
+  }
+
+  toolbarWindow.addDrawHandler(this, "draw_toolbarWindow");
+  toolbarWindow.loop();
 }
 
 // Variable declarations 

@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
 PImage map, startCountryFlag, startCountryImg, endCountryFlag, endCountryImg, passCountryFlag, passCountryImg, selectedCountryFlag;
 PFont defaultFont;
 int borderingDistance = 120; // placeholder for now
-boolean showEdges = false, showEdgeDist = false, firstEdges = true, showFlags = false;
+boolean showEdges = false, showEdgeDist = false, firstEdges = true;
 boolean showDijkstra = false, showCountryInfo = false, successStatus = true;  // gui
 String addEdgeStatus = "N"; // dubs as a boolean N = none | S = success | F = fail
 String startingCountry, endingCountry, passingCountry, startingCity, endingCity, passingCity, selectedCountry, addedEdge1, addedEdge2;    // from the dropdown
@@ -74,7 +74,7 @@ void setup(){
 
     returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Norway"));
     returnNodeWithName("Russia").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
-    
+
     for(Node node:nodes){
         node.addDefaultNeighbors();
         node.printNeighbors();
@@ -85,6 +85,7 @@ void setup(){
     returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Czechia"));
     returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Bulgaria"));
     returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Bulgaria"));
+    returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Serbia"));
 
     // the first edges have been created
     firstEdges=false;
