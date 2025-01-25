@@ -69,7 +69,7 @@ class Node{
 
     // checks if the mouse is inside the ui
     boolean isMouseOnUI(){
-        if(mouseX>0 && mouseX<200 && mouseY>200 && mouseY<600){
+        if(mouseX>0 && mouseX<200 && mouseY>200 && mouseY<800){
             return true;
         }
         return false;

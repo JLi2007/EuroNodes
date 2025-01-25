@@ -111,7 +111,7 @@ class Node{
 
     // checks if the mouse is inside the ui
     public boolean isMouseOnUI(){
-        if(mouseX>0 && mouseX<200 && mouseY>200 && mouseY<600){
+        if(mouseX>0 && mouseX<200 && mouseY>200 && mouseY<800){
             return true;
         }
         return false;
@@ -145,7 +145,8 @@ class Node{
         println(this.country + "'s neighbors: ");
 
         // sort by increasing distances when printing to terminal 
-        // if they are printed by default without sorting, they are in random order (default hashmap behavior)
+        // if they are printed without sorting, they are in random order (default hashmap behavior)
+        // use java comparator and lists
         List<Map.Entry<String, Integer>> sortedBorderingCountries = new ArrayList<>(this.borderingCountries.entrySet());
         sortedBorderingCountries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)); 
 
@@ -160,10 +161,14 @@ class Node{
     // sorts the hashmap to return the closest and furthest neighbor
     public String[] returnNeighbors(){
         String[] returnString = new String[this.borderingCountries.size()];
+
+        // sort the hashmap
         List<Map.Entry<String, Integer>> sortedBorderingCountries = new ArrayList<>(this.borderingCountries.entrySet());
         sortedBorderingCountries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)); 
 
         int c = 0;
+
+        // return the first and last indexes of the sorted hashmap, guaranteeing them to be the closest and farthest border
         for (Map.Entry country: sortedBorderingCountries){
             if(c==1){
                 returnString[0] = country.getKey().toString();
@@ -179,11 +184,14 @@ class Node{
 
     // create edges with all its neighbors
     public void createEdges(boolean selected){
+
+        // for each country in this.bordering countries, remove previous instances, then add the new edge
         for (Map.Entry<String, Integer> country : this.borderingCountries.entrySet()) {
+            // retrieve the other node
             Node n = returnNodeWithName(country.getKey());
 
             if(n!=null){
-                // first, remove the previous edge
+                // remove the previous edge (if applicable)
                 if(!firstEdges){
                     int removeEdge = returnEdgeIndex(this, n);
                     if(removeEdge != 0){
@@ -191,7 +199,7 @@ class Node{
                     }
                 }
 
-                // then, add the new edge
+                // add the new edge
                 edges.add(new Edge(this, n, country.getValue(), selected));
             }
         }
@@ -202,6 +210,7 @@ class Node{
         return PApplet.parseInt(dist(n1.x, n1.y, n2.x, n2.y));
     }
 
+    // draw node with the correct colours
     public void drawNode(){
         strokeWeight(5);
         stroke(this.currentStroke);
@@ -225,6 +234,7 @@ class Edge{
         this.defaultStroke = color(2, 30, 107);  
         this.selectedStroke = color(191, 8, 75);
         this.weight = 3;
+        // different colours when selected/unselected
         if(selected){
             this.currentStroke = this.selectedStroke;
             this.inverseCurrentStroke = this.defaultStroke;
@@ -235,22 +245,27 @@ class Edge{
         }
     }
 
+    // show edge (drawing it to the screen) using the correct colours
     public void showEdge(){
         strokeWeight(this.weight);
         stroke(this.currentStroke);
         line(n1.x, n1.y, n2.x, n2.y);
     }
 
+    // show edge weights it the checkbox is toggled 
     public void showEdgeDist(){
         if(showEdgeDist){
+            // draw the weight on the midpoint of the edge
             float x = (this.n1.x + this.n2.x ) / 2;
             float y = (this.n1.y + this.n2.y ) / 2;
+
+            // if the edge isn't with itself
             if(this.dist != 0){
                 fill(this.inverseCurrentStroke);
                 stroke(this.currentStroke);
                 strokeWeight(1);
 
-                // if statements to handle the size of the Edge Weight on UI
+                // if statements to handle the size of the Edge Weight on the ui. Larger distances get larger weights
                 if(this.dist>150){
                     textSize(15);
                     rect(x-15,y-9,30,20);
@@ -264,6 +279,7 @@ class Edge{
                     rect(x-12,y-7,24,16);
                 }
 
+                // draw the distance on the weight
                 fill(this.currentStroke);
                 text(this.dist, x, y);
             }
@@ -272,39 +288,64 @@ class Edge{
         textSize(15);
     }
 }
-public String runDijkstra(Node n1, Node n2, boolean passing){ 
+// Uses Dijkstra's shortest path algorithm. 
+// To understand what the code is doing, read this as it explains it FAR better than my comments can:
+// https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php 
+
+public String runDijkstra(Node n1, Node n2, boolean passing){
+    // return the position of starting and ending nodes 
     int startingNode = returnNodePosition(n1);
     int endingNode = returnNodePosition(n2);
+
+    // initialize arrays 
     int nodesSize = nodes.size();
     int[] distances = new int[nodesSize];
-    int[] predecessors = new int[nodesSize];
+    int[] predecessors = new int[nodesSize];   //holds the "travel history" 
     boolean[] visited = new boolean[nodesSize];
 
+    // initialize values in the arrays to Java max and min values
+    // they could be any values but these large absolute value integers make them distinctable
     for (int i = 0; i < nodesSize; i++) {
         distances[i] = Integer.MAX_VALUE;
         predecessors[i] = Integer.MIN_VALUE;
     }
 
+    // the distance from the starting node to itself is 0
     distances[startingNode] = 0;
 
+    // this loop represents the progression of the algorithm
+    // every cycle, one the next cloest node gets selected
     for (int i = 0; i < nodesSize; i++){
+        // find the node with the minimum distance. this is the "current node"
         int min = minDistance(distances, visited);
+
+        // if there are no more nodes to visit, we are done here
         if(min == -1){
             break;
         }
 
-        // change the the node with the minimum distance to visited
+        // change the current node to visited, we are on it right now
         visited[min] = true;
 
+        // iterate with c, representing "the neighboring node"
+        // the program checks all the nodes on the map, if there a node has a direct connection to the "current node", update its distance
+        // otherwise, skip over it. It will eventually be reached in future cycles
         for(int c = 0; c < nodesSize; c++){
+            // return the edge between "the neighboring node" and the "current node"
             Edge edge = returnEdge(nodes.get(min), nodes.get(c));
+            
             if(edge != null){
-                // println(nodes.get(min).country, nodes.get(c).country);
+                // access the edge distance
                 int edgeDist = edge.dist;
+
                 if(!visited[c] && edgeDist != 0 && distances[min] != Integer.MAX_VALUE){
+                    // this is the new distance from starting node to the "neighbouring node" via "current node". 
                     int newDist = distances[min] + edgeDist;
                     if(newDist < distances[c]){
+                        // update the distances array of the neighboring node
+                        // Note: this node is still "UNVISITED". Updating the distance still guarantees it to be found as the "current node" in future cycles
                         distances[c] = newDist;
+                        // update the path history array with the current node, marking that it has been visited
                         predecessors[c] = min;
                     }
                 }
@@ -312,17 +353,21 @@ public String runDijkstra(Node n1, Node n2, boolean passing){
         }
     }
 
-    printArray(distances);
+    // printArray(distances);
 
     // build the return string with java StringBuilder
     StringBuilder path = new StringBuilder();
     String previousNode = null;
-
+    
+    // iterate through the saved "travel history" to create the correct path
+    // loop starts from the most recent visited node and makes its way back through history
     for (int e = endingNode; e != Integer.MIN_VALUE; e = predecessors[e]) {
+        // avoids duplicates like "... country1-->country2-->country2 ..."
         if(nodes.get(e).country != previousNode){
-            // implement passing boolean for correct string return (or else it will return: "country1-->country2-->country2...")
             if(passing){
+                // this if statement also avoids duplicates like "... country1-->country2-->country2 ..." (for a special case when there is a passing country constraint)
                 if(nodes.get(e).country != n1.country){
+                    // inserting "Italy" to "Germany" results in "Italy -> Germany"
                     path.insert(0, nodes.get(e).country + (path.length() > 0 ? "->" : ""));
                     previousNode = nodes.get(e).country;
                 }
@@ -334,28 +379,35 @@ public String runDijkstra(Node n1, Node n2, boolean passing){
         }
     }
 
-    // if beginning and ending country are the same, return "country1 --> country1" rather than "country1"
+    // if beginning and ending country are the same, return "country1 --> country1" rather than only "country1"
     if(n1 == n2){
         path.insert(0, n1.country + "->");
     }
 
+    // return the final stringbuilder string
     return path.toString() + "," + distances[endingNode];
 }
 
+// find the closest node / check if all the nodes are visitied already
 public int minDistance(int[] distances, boolean[] visited){
     int min = Integer.MAX_VALUE;
     int minIndex = -1;
 
-    // check if all nodes are visited as if minIndex changes there is an unvisited node
+    // check if all nodes are visited: if minIndex changes there is an unvisited node
     for(int c = 0; c < nodes.size(); c++){
         if(!visited[c] && distances[c] <= min){
             min = distances[c];
+
+            // update the minIndex variable upon finding the closest unvisited node
             minIndex = c;
         }
     }
+
+    // if this returns -1, that means there are no more nodes to visit, otherwise, it returns the closest node
     return minIndex;
 }
 
+// normalize the distance to actual km
 public int normalizeDistance(int d){
     // actual distance from Paris to Madrid (Km)
     float n = 1274.8f;
@@ -383,7 +435,6 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     appc.stroke(13, 1, 115);
     appc.textSize(18);
 
-    // if statements to determine what to display on status    
     if(successStatus){
       appc.fill(23, 163, 2);
       appc.text("✓ STATUS ✓", 165, 460);
@@ -411,6 +462,7 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
       println(e);
     }
 
+    // if statements to determine what to display on status   
     if(showDijkstra){
       statusDescription.setText(endingCity + " is " + dijkstraDistance + " units (" + normalizeDistance(dijkstraDistance) + "km) away from " + startingCity + " \n" + dijkstraRoute);
     }
@@ -425,6 +477,7 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     }
 } 
 
+// UPDATE booleans on checkbox toggle
 public void edgesChecked(GCheckbox source, GEvent event) { 
   showEdges = !showEdges;
 } 
@@ -437,6 +490,7 @@ public void gridChecked(GCheckbox source, GEvent event) {
   showGrid = !showGrid;
 }
 
+// UPDATE variables on country select
 public void selectStartingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   startingCountry = returnCountry(startingSelect.getSelectedText());
@@ -460,7 +514,7 @@ public void selectEndingCountry(GDropList source, GEvent event) {
 public void selectPassingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
 
-  // if the user inputs a passing country
+  // only runs if the user inputs a passing country
   if(passingSelect.getSelectedText().equals("N/A") == false){
     passingCountry = returnCountry(passingSelect.getSelectedText());
     passingCity = returnCity(passingSelect.getSelectedText());
@@ -476,6 +530,7 @@ public void selectPassingCountry(GDropList source, GEvent event) {
   }
 }
 
+// OPEN the correct links on click 
 public void openWiki(GButton source, GEvent event){
   link("https://en.wikipedia.org/wiki/" + selectedCountry);
 }
@@ -484,6 +539,7 @@ public void openPexels(GButton source, GEvent event){
   link("https://www.pexels.com/search/"+selectedCountry+"%20famous/");
 }
 
+// SHOW/HIDE the wiki and pexels buttons on the sidebar
 public void showGUIButtons(){
   wiki_btn.setVisible(true);
   pexels_btn.setVisible(true);
@@ -494,6 +550,7 @@ public void hideGUIButtons(){
   pexels_btn.setVisible(false);
 }
 
+// HANDLING edge inputs
 public void inputEdge1(GTextField source, GEvent event) { 
   addedEdge1 = addEdge1.getText();
   addEdgeStatus = "N";
@@ -504,6 +561,7 @@ public void inputEdge2(GTextField source, GEvent event) {
   addEdgeStatus = "N";
 } 
 
+// ADD the edge
 public void addEdge(GButton source, GEvent event) {
   showDijkstra = false;
 
@@ -521,14 +579,13 @@ public void addEdge(GButton source, GEvent event) {
     // display success message in STATUS
     successStatus = true;
     addEdgeStatus = "S";
-  }
-  // otherwise, display the failure message in STATUS
-  else{
+  }else{   // otherwise cannot create edge. Display the failure message in STATUS
     successStatus = false;
     addEdgeStatus = "F";
   }
 } 
 
+// CALLING Dijkstra
 public void initDijkstra(GButton source, GEvent event) { 
   if(startingCountry != null && endingCountry != null ){
     if(passingCountry != null){
@@ -540,6 +597,7 @@ public void initDijkstra(GButton source, GEvent event) {
         dijkstraDistance1 = 0;
         dijkstraDistance2 = 0;
       }else{
+        // DEALING WITH PASSING COUNTRIES: Dijkstra from starting --> passing and then passing --> ending, then combine the data
         // from starting country to the passing country
         dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry), false);
         dijkstraRoute1 = dijkstraOutput.split(",")[0];
@@ -557,17 +615,16 @@ public void initDijkstra(GButton source, GEvent event) {
     }
 
     else{
-      // in the format "country1->country2->country3,distance"
+      // in the format "country1->country2->country3,distance" so must split it
       dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry), false);
       dijkstraRoute = dijkstraOutput.split(",")[0];
       dijkstraDistance = PApplet.parseInt(dijkstraOutput.split(",")[1]);
     }
 
-    println(dijkstraRoute, dijkstraDistance);
-
-    // placeholder
-    println("ran dijkstra and populated array var");
-    println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
+    // PRINTLN MESSAGES 
+    // println(dijkstraRoute, dijkstraDistance);
+    // println("ran dijkstra and populated array var");
+    // println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
 
     successStatus = true;
     showDijkstra = true;
@@ -688,7 +745,7 @@ public void createGUI(){
   passingCountry = null;
   passingCity = null;
 
-      // fetch the initial flags and images
+  // fetch the initial flags and images and load them into variables
   httpSetup();
   String s = requestHTTPFlag(startingCountry);
   String e = requestHTTPFlag(endingCountry);
@@ -723,43 +780,47 @@ public String requestHTTPFlag(String c){
 
     if(country != null){
        return "https://flagsapi.com/"+country+"/shiny/64.png"; 
-    }
-    else{
+    }else{
         return null;
     }
 }   
 
 // call the pexels api
 public String requestHTTPImage(String c){
+    // USUALLY KEPT SECRET (but since theres no risk I'm revealing it here, also for easier integration)
     String pexelsKey = "7oES3VxqNNpE9xjrCYnoKGGKMotGzhL0mE4Tzn66k8cYt6Zv38dPCxcO";
 
+    // special case for united kingdom as the query hates spaces
     if(c.equals("United Kingdom")){
         c = "U.K";
     }
-    
+
+    // create the endpoint
     String pixelsEndpoint = "https://api.pexels.com/v1/search?query=" + c + "%20famous&per_page=20";
 
+    // use get request and add the api key to retreive images from the api
     GetRequest pexelsGet = new GetRequest(pixelsEndpoint);
     pexelsGet.addHeader("Authorization", pexelsKey);
     pexelsGet.send();
 
+    // parse the JSOn object into a processing JSON object to access the data easier
     JSONObject response = parseJSONObject(pexelsGet.getContent());
 
-    // access the tiny image url in the json Object data, picks a random object on the page, indicatating a random photo
+    // go into the JSON data and pick out a random "tiny" photo from the search query
     String src = response.getJSONArray("photos").getJSONObject(PApplet.parseInt(random(0,20))).getJSONObject("src").getString("tiny");
 
+    // return it
     if(src != null){
-        println(src);
+        println("Here is your link " + src);
         return src;
-    }
-    else{
+    }else{
         return null;
     }
 }
 
+// load an image from URL (for the pexels api as security issues prevent the 'loadImage()' function from working without a indicating 'user-agents')
 public PImage loadImageFromURL(String urlString) {
   try {
-
     // open a java URL connection with the url string
     URL url = new URL(urlString);
     URLConnection connection = url.openConnection();
@@ -771,6 +832,7 @@ public PImage loadImageFromURL(String urlString) {
     // connect to the URL
     connection.connect();
 
+    // reads url into an array of bytes
     InputStream inputStream = connection.getInputStream();
       
     // create a temporary file to save the image to local
@@ -779,14 +841,18 @@ public PImage loadImageFromURL(String urlString) {
     // delete temp file on program exit
     tempFile.deleteOnExit();
     
-    // Write the input stream (image data) to the temporary file
+    // setup the output stream, linking it to the temporary file
     FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+    // create a byte array
     byte[] buffer = new byte[4096];
     int bytesRead;
+    // write the input stream (image bytes) to the temporary file
     while ((bytesRead = inputStream.read(buffer)) != -1) {
         outputStream.write(buffer, 0, bytesRead);
     }
 
+    // now load the image, as the file is written to bytes on local, bypassing the security issues
     return loadImage(tempFile.getAbsolutePath());
 
   } catch (Exception e) {
@@ -826,21 +892,6 @@ public void httpSetup(){
     mapToIso2.put("Switzerland", "CH");
     mapToIso2.put("Belgium", "BE");
 }
-
-
-    // // endpoints
-    // String populationEndpoint = "https://countriesnow.space/api/v0.1/countries/population"; ///q?iso3=NGA
-    // String unicodeFlagEndpoint = "https://countriesnow.space/api/v0.1/countries/flag/unicode";
-    // String urlFlagEndpoint = "https://countriesnow.space/api/v0.1/countries/flag/images";
-
-    // PostRequest populationPost = new PostRequest(populationEndpoint);
-    // populationPost.addHeader("Accept", "application/json");
-    // populationPost.addHeader("Content-Type", "application/json");
-    
-    // String jsonBody = "{ \"iso3\": \"NGA\" }";
-    // populationPost.setBody(jsonBody);
-    // populationPost.send();
-    // println(populationPost.getContent());
 // James Li, ICS 4UI Final Project, Jan 24 2025
 
 // Imports
