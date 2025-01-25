@@ -1,3 +1,5 @@
+// James Li, ICS 4UI Final Project, Jan 24 2025
+
 // Imports
 import g4p_controls.*;
 import http.requests.*;
@@ -33,6 +35,7 @@ HashMap<String, String> mapToIso2 = new HashMap<String, String>();
 
 void setup(){
     size(1100,750);
+
     // start the surface on the top left corner of computer screen
     surface.setLocation(0, 0);
     map = loadImage("europe.jpg");
@@ -40,11 +43,12 @@ void setup(){
     // initialize the hashmap mapping country names to iso2 for the api call
     createGUI();
 
+    // initialize lines
     smooth();
     strokeJoin(ROUND);
     strokeCap(ROUND);
 
-    // font
+    // initialize font
     defaultFont = createFont("SansSerif", 15);
     textFont(defaultFont);
     textAlign(CENTER, CENTER);
@@ -79,6 +83,12 @@ void setup(){
     nodes.add(new Node("Switzerland", 530, 537, 9));
     nodes.add(new Node("Belgium", 480, 455, 9));
 
+    // add the 'default' neighbors
+    for(Node node: nodes){
+        node.addDefaultNeighbors();
+    }
+
+    // create additional neighbors to make the starting map more realistic
     returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Norway"));
     returnNodeWithName("Iceland").addAdditionalNeighbor(returnNodeWithName("Ireland"));
     returnNodeWithName("Russia").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
@@ -93,13 +103,10 @@ void setup(){
     returnNodeWithName("Germany").addAdditionalNeighbor(returnNodeWithName("Poland"));
     returnNodeWithName("Denmark").addAdditionalNeighbor(returnNodeWithName("Sweden"));
     returnNodeWithName("Poland").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
+    returnNodeWithName("Hungary").addAdditionalNeighbor(returnNodeWithName("Ukraine"));
     returnNodeWithName("Ireland").addAdditionalNeighbor(returnNodeWithName("Portugal"));
 
-    for(Node node: nodes){
-        node.addDefaultNeighbors();
-    }
-
-    // manual adding/re,oving of neighbors to create a realistic starting UI
+    // remove unrealistic neighbors
     returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Czechia"));
     returnNodeWithName("Hungary").removeNeighbor(returnNodeWithName("Bulgaria"));
     returnNodeWithName("Austria").removeNeighbor(returnNodeWithName("Bulgaria"));
@@ -110,8 +117,9 @@ void setup(){
     returnNodeWithName("Poland").removeNeighbor(returnNodeWithName("Latvia"));
     returnNodeWithName("France").removeNeighbor(returnNodeWithName("Netherlands"));
 
+    // create the Edges to show them on screen
     for(Node node: nodes){
-        node.printNeighbors();
+        // node.printNeighbors();
         node.createEdges(false);
     }
 
@@ -127,6 +135,7 @@ void draw(){
     strokeWeight(1);
     fill(0,0,0,150);
 
+    // if the showGrid checkbox is toggled, draw a grid
     if(showGrid){
         // horizontal axis
         for(int x=0; x<width/100; x++){
@@ -145,7 +154,7 @@ void draw(){
     for(Node node: nodes){
         node.drawNode();
 
-        // update this variable for gui purposes
+        // update this variable for ui purposes
         if(node.isSelected){
             selectedCountry = node.country;
         }
@@ -153,7 +162,7 @@ void draw(){
     
     // draw the edges
     if(showEdges){
-        // based on checkbox state
+        // show ui based on checkbox state
         for(Edge edge: edges){
             edge.showEdge();
         }
@@ -165,19 +174,34 @@ void draw(){
     // semi-transparent rectangles on the left side
     stroke(0,0,0,150);
     strokeWeight(1);
+
+    // edge addition background
     fill(2, 30, 107, 150);
     rect(0, 600, 200, 200);
+
+    // country info background
     fill(97, 5, 39, 180);
     rect(0, 200, 200, 400);
+
+    // transparent blue box
+    fill(2, 30, 107, 60);
+    stroke(97, 5, 39, 160);
+    rect(30, 290, 170, 140);
+
+    // red vertical bar
     fill(97, 5, 39, 160);
     stroke(97, 5, 39, 160);
     rect(0, 210, 30, 380);
 
-    // uses basic matrixes to create and display text rotated 180 degrees
+    // uses basic matrix functions to create and display text
     fill(2, 30, 107);
+    // open matrix
     pushMatrix();
     translate(11, 400);
+    // rotate 180 degrees
     rotate(-HALF_PI);
+
+    // display the name of the selected country if there is one selected, or else display the default line
     if(showCountryInfo && selectedCountry != null){
       textSize(21);
       text(selectedCountry, 0, 0);
@@ -186,19 +210,23 @@ void draw(){
     else{
       text("Select a country on the UI to display information", 0, 0);
     }
+
+    // close matrix
     popMatrix();
     
     // update the sidebar if a country is selected
     if(showCountryInfo && selectedCountry!=null){
         showGUIButtons();
-        text("Closest Border", 100, 300);
-        text("Furthest Border", 100, 375);
+
+        fill(2, 30, 107);
+        text("Closest Border", 110, 300);
+        text("Furthest Border", 110, 375);
 
         // request the flag of selected country, load it, and display it
         String flag = requestHTTPFlag(selectedCountry);
         selectedCountryFlag = loadImage(flag);
-        image(selectedCountryFlag, 70, 225);
-        image(selectedCountryFlag, 70, 525);
+        image(selectedCountryFlag, 80, 225);
+        image(selectedCountryFlag, 80, 525);
 
         // return the closest and the furthest border (based of distance)
         Node n1 = returnNodeWithName(selectedCountry);
@@ -211,22 +239,25 @@ void draw(){
         if(c[0].equals("United Kingdom")){
             textSize(16);
         }
-        text(c[0], 100, 325);
+        text(c[0], 110, 325);
+
         if(c[1].equals("United Kingdom")){
             textSize(16);
         }
-        text(c[1], 100, 400);
+        text(c[1], 110, 400);
 
         // reset text size
         textSize(15);
     }
 
+    // if a country is not selected, don't show the wiki and image buttons
     if(!showCountryInfo){
         hideGUIButtons();
     }
 }
 
-// return the Node with name of country
+// RETURN FUNCTIONS
+// return the Node via country name
 Node returnNodeWithName(String name){
     if(name==null){
         return null;
@@ -240,7 +271,7 @@ Node returnNodeWithName(String name){
     return null;
 }
 
-// return the position of Node in the nodes arraylist
+// return the position of the Node in the nodes arraylist via Node
 int returnNodePosition(Node n1){
     for(int n = 0; n<nodes.size(); n++){
         if(nodes.get(n) == n1){
@@ -250,7 +281,7 @@ int returnNodePosition(Node n1){
     return 0;
 }
 
-// return the Edge between two Nodes
+// return the Edge between two Nodes via the two Nodes
 Edge returnEdge(Node n1, Node n2){
     for(Edge edge: edges){
         if(edge.n1 == n1 && edge.n2 == n2){
@@ -260,7 +291,7 @@ Edge returnEdge(Node n1, Node n2){
     return null;
 }
 
-// return the index of the Edge between two Nodes
+// return the index of the Edge between two Nodes via the two Nodes
 int returnEdgeIndex(Node n1, Node n2){
     for(int i = 0; i<edges.size(); i++){
         if(edges.get(i).n1 == n1 && edges.get(i).n2 == n2){

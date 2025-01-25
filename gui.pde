@@ -16,7 +16,6 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     appc.stroke(13, 1, 115);
     appc.textSize(18);
 
-    // if statements to determine what to display on status    
     if(successStatus){
       appc.fill(23, 163, 2);
       appc.text("✓ STATUS ✓", 165, 460);
@@ -29,21 +28,22 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     // show country flags and pexel fetched images on the gui
     if(startCountryFlag != null){
       appc.image(startCountryFlag, 100, 100);
-      appc.image(endCountryFlag, 100, 200);
+      appc.image(endCountryFlag, 100, 300);
     }
 
     appc.image(startCountryImg, 200, 75, 175, 100);
-    appc.image(endCountryImg, 200, 175, 175, 100);
+    appc.image(endCountryImg, 200, 275, 175, 100);
 
     try{
       if(passingCountry != null){
-        appc.image(passCountryFlag, 100, 300);
-        appc.image(passCountryImg, 200, 275, 175, 100);
+        appc.image(passCountryFlag, 100, 200);
+        appc.image(passCountryImg, 200, 175, 175, 100);
       }
     }catch(NullPointerException e){
       println(e);
     }
 
+    // if statements to determine what to display on status   
     if(showDijkstra){
       statusDescription.setText(endingCity + " is " + dijkstraDistance + " units (" + normalizeDistance(dijkstraDistance) + "km) away from " + startingCity + " \n" + dijkstraRoute);
     }
@@ -58,6 +58,7 @@ synchronized public void draw_toolbarWindow(PApplet appc, GWinData data) {
     }
 } 
 
+// UPDATE booleans on checkbox toggle
 public void edgesChecked(GCheckbox source, GEvent event) { 
   showEdges = !showEdges;
 } 
@@ -70,6 +71,7 @@ public void gridChecked(GCheckbox source, GEvent event) {
   showGrid = !showGrid;
 }
 
+// UPDATE variables on country select
 public void selectStartingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
   startingCountry = returnCountry(startingSelect.getSelectedText());
@@ -93,7 +95,7 @@ public void selectEndingCountry(GDropList source, GEvent event) {
 public void selectPassingCountry(GDropList source, GEvent event) {
   showDijkstra = false;
 
-  // if the user inputs a passing country
+  // only runs if the user inputs a passing country
   if(passingSelect.getSelectedText().equals("N/A") == false){
     passingCountry = returnCountry(passingSelect.getSelectedText());
     passingCity = returnCity(passingSelect.getSelectedText());
@@ -109,6 +111,7 @@ public void selectPassingCountry(GDropList source, GEvent event) {
   }
 }
 
+// OPEN the correct links on click 
 public void openWiki(GButton source, GEvent event){
   link("https://en.wikipedia.org/wiki/" + selectedCountry);
 }
@@ -117,6 +120,7 @@ public void openPexels(GButton source, GEvent event){
   link("https://www.pexels.com/search/"+selectedCountry+"%20famous/");
 }
 
+// SHOW/HIDE the wiki and pexels buttons on the sidebar
 void showGUIButtons(){
   wiki_btn.setVisible(true);
   pexels_btn.setVisible(true);
@@ -127,6 +131,7 @@ void hideGUIButtons(){
   pexels_btn.setVisible(false);
 }
 
+// HANDLING edge inputs
 public void inputEdge1(GTextField source, GEvent event) { 
   addedEdge1 = addEdge1.getText();
   addEdgeStatus = "N";
@@ -137,6 +142,7 @@ public void inputEdge2(GTextField source, GEvent event) {
   addEdgeStatus = "N";
 } 
 
+// ADD the edge
 public void addEdge(GButton source, GEvent event) {
   showDijkstra = false;
 
@@ -154,28 +160,35 @@ public void addEdge(GButton source, GEvent event) {
     // display success message in STATUS
     successStatus = true;
     addEdgeStatus = "S";
-  }
-  // otherwise, display the failure message in STATUS
-  else{
+  }else{   // otherwise cannot create edge. Display the failure message in STATUS
     successStatus = false;
     addEdgeStatus = "F";
   }
 } 
 
+// CALLING Dijkstra
 public void initDijkstra(GButton source, GEvent event) { 
   if(startingCountry != null && endingCountry != null ){
-
     if(passingCountry != null){
+      String dijkstraRoute1, dijkstraRoute2;
+      int dijkstraDistance1, dijkstraDistance2;
+      if(startingCountry.equals(passingCountry) && startingCountry.equals(endingCountry)){
+        dijkstraRoute1 = startingCountry + "->" + passingCountry + "->" + endingCountry;
+        dijkstraRoute2 = "";
+        dijkstraDistance1 = 0;
+        dijkstraDistance2 = 0;
+      }else{
+        // DEALING WITH PASSING COUNTRIES: Dijkstra from starting --> passing and then passing --> ending, then combine the data
+        // from starting country to the passing country
+        dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry), false);
+        dijkstraRoute1 = dijkstraOutput.split(",")[0];
+        dijkstraDistance1 = int(dijkstraOutput.split(",")[1]);
 
-      // from starting country to the passing country
-      dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(passingCountry), false);
-      String dijkstraRoute1 = dijkstraOutput.split(",")[0];
-      int dijkstraDistance1 = int(dijkstraOutput.split(",")[1]);
-
-      // from passing country to the ending country
-      dijkstraOutput = runDijkstra(returnNodeWithName(passingCountry), returnNodeWithName(endingCountry), true);
-      String dijkstraRoute2 = "->" + dijkstraOutput.split(",")[0];
-      int dijkstraDistance2 = int(dijkstraOutput.split(",")[1]);
+        // from passing country to the ending country
+        dijkstraOutput = runDijkstra(returnNodeWithName(passingCountry), returnNodeWithName(endingCountry), true);
+        dijkstraRoute2 = "->" + dijkstraOutput.split(",")[0];
+        dijkstraDistance2 = int(dijkstraOutput.split(",")[1]);
+      }
 
       // combine 
       dijkstraRoute = dijkstraRoute1 + dijkstraRoute2;
@@ -183,17 +196,16 @@ public void initDijkstra(GButton source, GEvent event) {
     }
 
     else{
-      // in the format "country1->country2->country3,distance"
+      // in the format "country1->country2->country3,distance" so must split it
       dijkstraOutput = runDijkstra(returnNodeWithName(startingCountry), returnNodeWithName(endingCountry), false);
       dijkstraRoute = dijkstraOutput.split(",")[0];
       dijkstraDistance = int(dijkstraOutput.split(",")[1]);
     }
 
-    println(dijkstraRoute, dijkstraDistance);
-
-    // placeholder
-    println("ran dijkstra and populated array var");
-    println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
+    // PRINTLN MESSAGES 
+    // println(dijkstraRoute, dijkstraDistance);
+    // println("ran dijkstra and populated array var");
+    // println(endingCountry + " is " + dijkstraDistance + " units away from " + startingCountry);
 
     successStatus = true;
     showDijkstra = true;
@@ -243,19 +255,19 @@ public void createGUI(){
   starting_label.setOpaque(false);
   starting_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  endingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 6, 15);
+  endingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 6, 15);
   endingSelect.setItems(loadStrings("list_countries"), 0);
   endingSelect.addEventHandler(this, "selectEndingCountry");
-  ending_label = new GLabel(toolbarWindow, 20, 170, 150, 20);
+  ending_label = new GLabel(toolbarWindow, 20, 270, 150, 20);
   ending_label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   ending_label.setText("Where To End");
   ending_label.setOpaque(false);
   ending_label.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-  passingSelect = new GDropList(toolbarWindow, 20, 290, 150, 100, 6, 15);
+  passingSelect = new GDropList(toolbarWindow, 20, 190, 150, 100, 6, 15);
   passingSelect.setItems(loadStrings("list_countries2"), 0);
   passingSelect.addEventHandler(this, "selectPassingCountry");
-  passing_label = new GLabel(toolbarWindow, 20, 270, 150, 20);
+  passing_label = new GLabel(toolbarWindow, 20, 170, 150, 20);
   passing_label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   passing_label.setText("Where To Pass");
   passing_label.setOpaque(false);
@@ -286,18 +298,18 @@ public void createGUI(){
   add_edge_btn.addEventHandler(this, "addEdge");
   add_edge_btn.setLocalColorScheme(GCScheme.RED_SCHEME);
 
-  info_label = new GLabel(this, 0, 200, 200, 20);
+  info_label = new GLabel(this, 10, 210, 200, 20);
   info_label.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   info_label.setText("Country Info");
   info_label.setOpaque(false);
-  info_label.setFont(new Font("SansSerif", Font.PLAIN, 15));
+  info_label.setFont(new Font("SansSerif", Font.PLAIN, 18));
 
-  wiki_btn = new GButton(this, 50, 430, 100, 30);
+  wiki_btn = new GButton(this, 60, 450, 100, 30);
   wiki_btn.setText("Wiki Page");
   wiki_btn.addEventHandler(this, "openWiki");
   wiki_btn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
 
-  pexels_btn = new GButton(this, 50, 470, 100, 30);
+  pexels_btn = new GButton(this, 60, 490, 100, 30);
   pexels_btn.setText("Images");
   pexels_btn.addEventHandler(this, "openPexels");
   pexels_btn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
@@ -314,7 +326,7 @@ public void createGUI(){
   passingCountry = null;
   passingCity = null;
 
-      // fetch the initial flags and images
+  // fetch the initial flags and images and load them into variables
   httpSetup();
   String s = requestHTTPFlag(startingCountry);
   String e = requestHTTPFlag(endingCountry);
